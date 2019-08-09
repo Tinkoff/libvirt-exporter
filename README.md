@@ -20,6 +20,7 @@ bindings for libvirt. This exporter make use of the
 The following metrics/labels are being exported:
 
 ```
+libvirt_domain_meta_block{bus="...",cache="...",discard="...",disk_type="...",domain="...",driver_type="...",serial="...",source_file="...",target_device="..."}
 libvirt_domain_block_stats_allocation{domain="-...",target_device="..."}
 libvirt_domain_block_stats_capacity{domain="-...",target_device="..."}
 libvirt_domain_block_stats_flush_requests_total{domain="-...",target_device="..."}
@@ -39,6 +40,7 @@ libvirt_domain_info_meta{domain="...",flavor="...",instance_name="...",project_n
 libvirt_domain_info_virtual_cpus{domain="..."}
 libvirt_domain_info_vstate{domain="..."}
 
+libvirt_domain_interfaces_meta{virtual_interface="...",domain="...",source_bridge="...",target_device="..."}
 libvirt_domain_interface_stats_receive_bytes_total{domain="...",target_device="..."}
 libvirt_domain_interface_stats_receive_drops_total{domain="...",target_device="..."}
 libvirt_domain_interface_stats_receive_errors_total{domain="...",target_device="..."}
@@ -57,9 +59,6 @@ libvirt_domain_memory_stats_rss{domain="..."}
 libvirt_domain_memory_stats_unused{domain="..."}
 libvirt_domain_memory_stats_usable{domain="..."}
 libvirt_domain_memory_stats_used_percent{domain="..."}
-
-libvirt_domain_meta_block{bus="...",cache="...",discard="...",domain="...",serial="...",source_file="...",target_device="...",type="..."}
-libvirt_domain_meta_interfaces{virtual_interface="...",domain="...",source_bridge="...",target_device="..."}
 
 libvirt_up
 ```
