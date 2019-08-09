@@ -21,7 +21,7 @@ import (
 	"github.com/libvirt/libvirt-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/AlexZzz/libvirt_exporter_improved/libvirtSchema"
+	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"net/http"

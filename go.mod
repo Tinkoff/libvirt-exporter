@@ -1,4 +1,4 @@
-module github.com/AlexZzz/libvirt_exporter_improved
+module github.com/AlexZzz/libvirt-exporter
 
 go 1.12
 
