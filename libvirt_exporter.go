@@ -69,7 +69,7 @@ var (
 		nil)
 
 	libvirtDomainMetaBlockDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "domain_meta", "block"),
+		prometheus.BuildFQName("libvirt", "domain_block", "meta"),
 		"Block device metadata info. Device name, source file, serial.",
 		[]string{"domain", "target_device", "source_file", "serial", "bus", "disk_type", "driver_type", "cache", "discard"},
 		nil)
@@ -130,7 +130,7 @@ var (
 		nil)
 
 	libvirtDomainMetaInterfacesDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "domain_meta", "interfaces"),
+		prometheus.BuildFQName("libvirt", "domain_inferface", "meta"),
 		"Interfaces metadata. Source bridge, target device, interface uuid",
 		[]string{"domain", "source_bridge", "target_device", "virtual_interface"},
 		nil)
