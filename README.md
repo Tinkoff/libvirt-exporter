@@ -20,7 +20,7 @@ bindings for libvirt. This exporter make use of the
 The following metrics/labels are being exported:
 
 ```
-libvirt_domain_meta_block{bus="...",cache="...",discard="...",disk_type="...",domain="...",driver_type="...",serial="...",source_file="...",target_device="..."}
+libvirt_domain_block_meta{bus="...",cache="...",discard="...",disk_type="...",domain="...",driver_type="...",serial="...",source_file="...",target_device="..."}
 libvirt_domain_block_stats_allocation{domain="-...",target_device="..."}
 libvirt_domain_block_stats_capacity{domain="-...",target_device="..."}
 libvirt_domain_block_stats_flush_requests_total{domain="-...",target_device="..."}
@@ -40,7 +40,7 @@ libvirt_domain_info_meta{domain="...",flavor="...",instance_name="...",project_n
 libvirt_domain_info_virtual_cpus{domain="..."}
 libvirt_domain_info_vstate{domain="..."}
 
-libvirt_domain_interfaces_meta{virtual_interface="...",domain="...",source_bridge="...",target_device="..."}
+libvirt_domain_interface_meta{virtual_interface="...",domain="...",source_bridge="...",target_device="..."}
 libvirt_domain_interface_stats_receive_bytes_total{domain="...",target_device="..."}
 libvirt_domain_interface_stats_receive_drops_total{domain="...",target_device="..."}
 libvirt_domain_interface_stats_receive_errors_total{domain="...",target_device="..."}
