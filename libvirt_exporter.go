@@ -71,7 +71,7 @@ var (
 	libvirtDomainMetaBlockDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_meta", "block"),
 		"Block device metadata info. Device name, source file, serial.",
-		[]string{"domain", "target_device", "source_file", "serial", "bus", "type", "cache", "discard"},
+		[]string{"domain", "target_device", "source_file", "serial", "bus", "disk_type", "driver_type", "cache", "discard"},
 		nil)
 	libvirtDomainBlockRdBytesDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_block_stats", "read_bytes_total"),
@@ -328,6 +328,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 			DiskSource,
 			Device.Serial,
 			Device.Target.Bus,
+			Device.DiskType,
 			Device.Driver.Type,
 			Device.Driver.Cache,
 			Device.Driver.Discard,
