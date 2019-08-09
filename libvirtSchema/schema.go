@@ -15,6 +15,42 @@ package libvirtSchema
 
 type Domain struct {
 	Devices Devices `xml:"devices"`
+	Metadata Metadata `xml:"metadata"`
+}
+
+type Metadata struct {
+	NovaInstance Instance `xml:"instance"`
+}
+
+type Instance struct {
+	NovaFlavor Flavor `xml:"flavor"`
+	NovaOwner Owner `xml:"owner"`
+	NovaName string `xml:"name"`
+	NovaRoot Root `xml:"root"`
+}
+
+type Flavor struct {
+	FlavorName string `xml:"name,attr"`
+}
+
+type Owner struct {
+	NovaUser User `xml:"user"`
+	NovaProject Project `xml:"project"`
+}
+
+type User struct {
+	UserName string `xml:",chardata"`
+	UserUUID string `xml:"uuid,attr"`
+}
+
+type Project struct {
+	ProjectName string `xml:",chardata"`
+	ProjectUUID string `xml:"uuid,attr"`
+}
+
+type Root struct {
+	RootType string `xml:"type,attr"`
+	RootUUID string `xml:"uuid,attr"`
 }
 
 type Devices struct {
