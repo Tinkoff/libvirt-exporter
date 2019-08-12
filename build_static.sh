@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker run -i -v `pwd`:/libvirt_exporter alpine:3.8 /bin/sh << 'EOF'
+docker run -i -v `pwd`:/libvirt-exporter alpine:3.8 /bin/sh << 'EOF'
 set -ex
 
 # Install prerequisites for the build process.
@@ -27,10 +27,10 @@ make -j$(nproc)
 make install
 sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
 
-# Build the libvirt_exporter.
-cd /libvirt_exporter
+# Build the libvirt-exporter.
+cd /libvirt-exporter
 export GOPATH=/gopath
 go get -d ./...
-go build --ldflags '-extldflags "-static"' -o libvirt_exporter
-strip libvirt_exporter
+go build --ldflags '-extldflags "-static"' -o libvirt-exporter
+strip libvirt-exporter
 EOF
