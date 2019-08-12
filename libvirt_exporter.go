@@ -130,7 +130,7 @@ var (
 		nil)
 
 	libvirtDomainMetaInterfacesDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "domain_inferface", "meta"),
+		prometheus.BuildFQName("libvirt", "domain_interface", "meta"),
 		"Interfaces metadata. Source bridge, target device, interface uuid",
 		[]string{"domain", "source_bridge", "target_device", "virtual_interface"},
 		nil)
