@@ -109,7 +109,7 @@ var (
 		[]string{"domain", "target_device"},
 		nil)
 	libvirtDomainBlockFlushTotalTimesDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "domain_block_stats", "flush_total"),
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "flush_time_total"),
 		"Total time (ns) spent on cache flushing to a block device, in ns, that is, 1/1,000,000,000 of a second, or 10−9 seconds.",
 		[]string{"domain", "target_device"},
 		nil)
