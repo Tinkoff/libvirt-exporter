@@ -584,7 +584,9 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	stats, err := conn.GetAllDomainStats([]*libvirt.Domain{}, libvirt.DOMAIN_STATS_STATE|libvirt.DOMAIN_STATS_CPU_TOTAL|
 		libvirt.DOMAIN_STATS_INTERFACE|libvirt.DOMAIN_STATS_BALLOON|libvirt.DOMAIN_STATS_BLOCK|
 		libvirt.DOMAIN_STATS_PERF|libvirt.DOMAIN_STATS_VCPU,
-		libvirt.CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT)
+		//libvirt.CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT, // maybe in future
+		libvirt.CONNECT_GET_ALL_DOMAINS_STATS_RUNNING|libvirt.CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF)
+
 	if err != nil {
 		return err
 	}
