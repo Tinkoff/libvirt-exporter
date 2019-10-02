@@ -355,7 +355,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 			ch <- prometheus.MustNewConstMetric(
 				libvirtDomainBlockRdTotalTimeSecondsDesc,
 				prometheus.CounterValue,
-				float64(disk.RdTimes),
+				float64(disk.RdTimes)/1e9,
 				domainName,
 				disk.Name)
 		}
@@ -379,7 +379,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 			ch <- prometheus.MustNewConstMetric(
 				libvirtDomainBlockWrTotalTimesDesc,
 				prometheus.CounterValue,
-				float64(disk.WrTimes),
+				float64(disk.WrTimes)/1e9,
 				domainName,
 				disk.Name)
 		}
@@ -395,7 +395,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 			ch <- prometheus.MustNewConstMetric(
 				libvirtDomainBlockFlushTotalTimeSecondsDesc,
 				prometheus.CounterValue,
-				float64(disk.FlTimes)*1e9,
+				float64(disk.FlTimes)/1e9,
 				domainName,
 				disk.Name)
 		}
