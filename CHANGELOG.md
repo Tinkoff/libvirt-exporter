@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2019-10-02
+### Changed
+- Fix seconds calculation. It was wrong since 0.3.0.
+
 ## [0.3.0] - 2019-09-27
 ### Added
 - Add CHANGELOG.md
