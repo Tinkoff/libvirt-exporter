@@ -586,14 +586,18 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 		libvirt.DOMAIN_STATS_PERF|libvirt.DOMAIN_STATS_VCPU,
 		//libvirt.CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT, // maybe in future
 		libvirt.CONNECT_GET_ALL_DOMAINS_STATS_RUNNING|libvirt.CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF)
+	defer func(stats []libvirt.DomainStats) {
+		for _, stat := range stats {
+			stat.Domain.Free()
+		}
+	}(stats)
 	if err != nil {
 		return err
 	}
 	for _, stat := range stats {
 		err = CollectDomain(ch, stat)
-		stat.Domain.Free()
 		if err != nil {
-			return err
+			log.Printf("Failed to scrape metrics: %s", err)
 		}
 	}
 	return nil
