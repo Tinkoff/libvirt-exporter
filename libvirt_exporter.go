@@ -18,6 +18,7 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
 	"github.com/libvirt/libvirt-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -82,6 +83,11 @@ var (
 	libvirtDomainVcpuCPUDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_vcpu", "cpu"),
 		"Real CPU number, or one of the values from virVcpuHostCpuState",
+		[]string{"domain", "vcpu"},
+		nil)
+	libvirtDomainVcpuWaitDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_vcpu", "wait"),
+		"Vcpu's wait_sum metric. CONFIG_SCHEDSTATS has to be enabled",
 		[]string{"domain", "vcpu"},
 		nil)
 
@@ -342,6 +348,22 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 				float64(vcpu.Cpu),
 				domainName,
 				strconv.FormatInt(int64(vcpu.Number), 10))
+		}
+	}
+
+	/* There's no Wait in GetVcpus()
+	 * But there's no cpu number in libvirt.DomainStats
+	 * Time and State are present in both structs
+	 * So, let's take Wait here
+	 */
+	for cpuNum, vcpu := range stat.Vcpu {
+		if vcpu.WaitSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainVcpuWaitDesc,
+				prometheus.CounterValue,
+				float64(vcpu.Wait)/1000/1000/1000,
+				domainName,
+				strconv.FormatInt(int64(cpuNum), 10))
 		}
 	}
 
@@ -707,6 +729,7 @@ func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- libvirtDomainVcpuStateDesc
 	ch <- libvirtDomainVcpuTimeDesc
 	ch <- libvirtDomainVcpuCPUDesc
+	ch <- libvirtDomainVcpuWaitDesc
 
 	// Domain block stats
 	ch <- libvirtDomainMetaBlockDesc
