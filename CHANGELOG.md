@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fix potential domain leak.
 - Add per-vcpu stats: cpu number, time running and state.
+- Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it.
 
 ## [1.0.0] - 2020-03-16
 ### Changed
