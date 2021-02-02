@@ -36,11 +36,8 @@ import (
 
 /*
 #cgo pkg-config: libvirt
-#include <libvirt/libvirt.h>
-#include <libvirt/virterror.h>
 #include <stdlib.h>
-#include "connect_compat.h"
-#include "connect_cfuncs.h"
+#include "connect_wrapper.h"
 */
 import "C"
 
@@ -61,7 +58,7 @@ const (
 	CONNECT_CLOSE_REASON_CLIENT    = ConnectCloseReason(C.VIR_CONNECT_CLOSE_REASON_CLIENT)
 )
 
-type ConnectListAllDomainsFlags int
+type ConnectListAllDomainsFlags uint
 
 const (
 	CONNECT_LIST_DOMAINS_ACTIVE         = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_ACTIVE)
@@ -78,9 +75,11 @@ const (
 	CONNECT_LIST_DOMAINS_NO_AUTOSTART   = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)
 	CONNECT_LIST_DOMAINS_HAS_SNAPSHOT   = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT)
 	CONNECT_LIST_DOMAINS_NO_SNAPSHOT    = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT)
+	CONNECT_LIST_DOMAINS_HAS_CHECKPOINT = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT)
+	CONNECT_LIST_DOMAINS_NO_CHECKPOINT  = ConnectListAllDomainsFlags(C.VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT)
 )
 
-type ConnectListAllNetworksFlags int
+type ConnectListAllNetworksFlags uint
 
 const (
 	CONNECT_LIST_NETWORKS_INACTIVE     = ConnectListAllNetworksFlags(C.VIR_CONNECT_LIST_NETWORKS_INACTIVE)
@@ -91,7 +90,7 @@ const (
 	CONNECT_LIST_NETWORKS_NO_AUTOSTART = ConnectListAllNetworksFlags(C.VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART)
 )
 
-type ConnectListAllStoragePoolsFlags int
+type ConnectListAllStoragePoolsFlags uint
 
 const (
 	CONNECT_LIST_STORAGE_POOLS_INACTIVE     = ConnectListAllStoragePoolsFlags(C.VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)
@@ -113,29 +112,31 @@ const (
 	CONNECT_LIST_STORAGE_POOLS_GLUSTER      = ConnectListAllStoragePoolsFlags(C.VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER)
 	CONNECT_LIST_STORAGE_POOLS_ZFS          = ConnectListAllStoragePoolsFlags(C.VIR_CONNECT_LIST_STORAGE_POOLS_ZFS)
 	CONNECT_LIST_STORAGE_POOLS_VSTORAGE     = ConnectListAllStoragePoolsFlags(C.VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE)
+	CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT = ConnectListAllStoragePoolsFlags(C.VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT)
 )
 
-type ConnectBaselineCPUFlags int
+type ConnectBaselineCPUFlags uint
 
 const (
 	CONNECT_BASELINE_CPU_EXPAND_FEATURES = ConnectBaselineCPUFlags(C.VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES)
 	CONNECT_BASELINE_CPU_MIGRATABLE      = ConnectBaselineCPUFlags(C.VIR_CONNECT_BASELINE_CPU_MIGRATABLE)
 )
 
-type ConnectCompareCPUFlags int
+type ConnectCompareCPUFlags uint
 
 const (
 	CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE = ConnectCompareCPUFlags(C.VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE)
+	CONNECT_COMPARE_CPU_VALIDATE_XML      = ConnectCompareCPUFlags(C.VIR_CONNECT_COMPARE_CPU_VALIDATE_XML)
 )
 
-type ConnectListAllInterfacesFlags int
+type ConnectListAllInterfacesFlags uint
 
 const (
 	CONNECT_LIST_INTERFACES_INACTIVE = ConnectListAllInterfacesFlags(C.VIR_CONNECT_LIST_INTERFACES_INACTIVE)
 	CONNECT_LIST_INTERFACES_ACTIVE   = ConnectListAllInterfacesFlags(C.VIR_CONNECT_LIST_INTERFACES_ACTIVE)
 )
 
-type ConnectListAllNodeDeviceFlags int
+type ConnectListAllNodeDeviceFlags uint
 
 const (
 	CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM)
@@ -154,9 +155,14 @@ const (
 	CONNECT_LIST_NODE_DEVICES_CAP_MDEV          = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV)
 	CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES)
 	CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV       = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV)
+	CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV       = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV)
+	CONNECT_LIST_NODE_DEVICES_CAP_VDPA          = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA)
+	CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD       = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD)
+	CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE)
+	CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     = ConnectListAllNodeDeviceFlags(C.VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX)
 )
 
-type ConnectListAllSecretsFlags int
+type ConnectListAllSecretsFlags uint
 
 const (
 	CONNECT_LIST_SECRETS_EPHEMERAL    = ConnectListAllSecretsFlags(C.VIR_CONNECT_LIST_SECRETS_EPHEMERAL)
@@ -165,7 +171,7 @@ const (
 	CONNECT_LIST_SECRETS_NO_PRIVATE   = ConnectListAllSecretsFlags(C.VIR_CONNECT_LIST_SECRETS_NO_PRIVATE)
 )
 
-type ConnectGetAllDomainStatsFlags int
+type ConnectGetAllDomainStatsFlags uint
 
 const (
 	CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE        = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE)
@@ -176,11 +182,12 @@ const (
 	CONNECT_GET_ALL_DOMAINS_STATS_PAUSED        = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_PAUSED)
 	CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF       = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF)
 	CONNECT_GET_ALL_DOMAINS_STATS_OTHER         = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER)
+	CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT        = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT)
 	CONNECT_GET_ALL_DOMAINS_STATS_BACKING       = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
 	CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS = ConnectGetAllDomainStatsFlags(C.VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS)
 )
 
-type ConnectFlags int
+type ConnectFlags uint
 
 const (
 	CONNECT_RO         = ConnectFlags(C.VIR_CONNECT_RO)
@@ -211,7 +218,7 @@ const (
 	CPU_COMPARE_SUPERSET     = CPUCompareResult(C.VIR_CPU_COMPARE_SUPERSET)
 )
 
-type NodeAllocPagesFlags int
+type NodeAllocPagesFlags uint
 
 const (
 	NODE_ALLOC_PAGES_ADD = NodeAllocPagesFlags(C.VIR_NODE_ALLOC_PAGES_ADD)
@@ -311,8 +318,10 @@ func releaseConnectionData(c *Connect) {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virGetVersion
 func GetVersion() (uint32, error) {
 	var version C.ulong
-	if err := C.virGetVersion(&version, nil, nil); err < 0 {
-		return 0, GetLastError()
+	var err C.virError
+	ret := C.virGetVersionWrapper(&version, nil, nil, &err)
+	if ret < 0 {
+		return 0, makeError(&err)
 	}
 	return uint32(version), nil
 }
@@ -324,9 +333,10 @@ func NewConnect(uri string) (*Connect, error) {
 		cUri = C.CString(uri)
 		defer C.free(unsafe.Pointer(cUri))
 	}
-	ptr := C.virConnectOpen(cUri)
+	var err C.virError
+	ptr := C.virConnectOpenWrapper(cUri, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Connect{ptr: ptr}, nil
 }
@@ -397,10 +407,11 @@ func NewConnectWithAuth(uri string, auth *ConnectAuth, flags ConnectFlags) (*Con
 
 	callbackID := registerCallbackId(auth.Callback)
 
-	ptr := C.virConnectOpenAuthWrap(cUri, &ccredtype[0], C.uint(len(auth.CredType)), C.int(callbackID), C.uint(flags))
+	var err C.virError
+	ptr := C.virConnectOpenAuthWrapper(cUri, &ccredtype[0], C.uint(len(auth.CredType)), C.int(callbackID), C.uint(flags), &err)
 	freeCallbackId(callbackID)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Connect{ptr: ptr}, nil
 }
@@ -412,18 +423,20 @@ func NewConnectReadOnly(uri string) (*Connect, error) {
 		cUri = C.CString(uri)
 		defer C.free(unsafe.Pointer(cUri))
 	}
-	ptr := C.virConnectOpenReadOnly(cUri)
+	var err C.virError
+	ptr := C.virConnectOpenReadOnlyWrapper(cUri, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Connect{ptr: ptr}, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectClose
 func (c *Connect) Close() (int, error) {
-	result := int(C.virConnectClose(c.ptr))
+	var err C.virError
+	result := int(C.virConnectCloseWrapper(c.ptr, &err))
 	if result == -1 {
-		return result, GetLastError()
+		return result, makeError(&err)
 	}
 	if result == 0 {
 		// No more reference to this connection, release data.
@@ -435,9 +448,10 @@ func (c *Connect) Close() (int, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectRef
 func (c *Connect) Ref() error {
-	ret := C.virConnectRef(c.ptr)
+	var err C.virError
+	ret := C.virConnectRefWrapper(c.ptr, &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
@@ -451,11 +465,11 @@ type CloseCallback func(conn *Connect, reason ConnectCloseReason)
 func (c *Connect) RegisterCloseCallback(callback CloseCallback) error {
 	c.UnregisterCloseCallback()
 	goCallbackId := registerCallbackId(callback)
-	callbackPtr := unsafe.Pointer(C.closeCallback_cgo)
-	res := C.virConnectRegisterCloseCallback_cgo(c.ptr, C.virConnectCloseFunc(callbackPtr), C.long(goCallbackId))
+	var err C.virError
+	res := C.virConnectRegisterCloseCallbackWrapper(c.ptr, C.long(goCallbackId), &err)
 	if res != 0 {
 		freeCallbackId(goCallbackId)
-		return GetLastError()
+		return makeError(&err)
 	}
 	connData := getConnectionData(c)
 	connData.closeCallbackId = &goCallbackId
@@ -468,10 +482,10 @@ func (c *Connect) UnregisterCloseCallback() error {
 	if connData.closeCallbackId == nil {
 		return nil
 	}
-	callbackPtr := unsafe.Pointer(C.closeCallback_cgo)
-	res := C.virConnectUnregisterCloseCallback(c.ptr, C.virConnectCloseFunc(callbackPtr))
+	var err C.virError
+	res := C.virConnectUnregisterCloseCallbackWrapper(c.ptr, &err)
 	if res != 0 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	connData.closeCallbackId = nil
 	return nil
@@ -487,11 +501,97 @@ func closeCallback(conn C.virConnectPtr, reason ConnectCloseReason, goCallbackId
 	callback(&Connect{ptr: conn}, reason)
 }
 
+type ConnectIdentity struct {
+	UserNameSet              bool
+	UserName                 string
+	UNIXUserIDSet            bool
+	UNIXUserID               uint64
+	GroupNameSet             bool
+	GroupName                string
+	UNIXGroupIDSet           bool
+	UNIXGroupID              uint64
+	ProcessIDSet             bool
+	ProcessID                int64
+	ProcessTimeSet           bool
+	ProcessTime              uint64
+	SASLUserNameSet          bool
+	SASLUserName             string
+	X509DistinguishedNameSet bool
+	X509DistinguishedName    string
+	SELinuxContextSet        bool
+	SELinuxContext           string
+}
+
+func getConnectIdentityFieldInfo(params *ConnectIdentity) map[string]typedParamsFieldInfo {
+	return map[string]typedParamsFieldInfo{
+		C.VIR_CONNECT_IDENTITY_USER_NAME: typedParamsFieldInfo{
+			set: &params.UserNameSet,
+			s:   &params.UserName,
+		},
+		C.VIR_CONNECT_IDENTITY_UNIX_USER_ID: typedParamsFieldInfo{
+			set: &params.UNIXUserIDSet,
+			ul:  &params.UNIXUserID,
+		},
+		C.VIR_CONNECT_IDENTITY_GROUP_NAME: typedParamsFieldInfo{
+			set: &params.GroupNameSet,
+			s:   &params.GroupName,
+		},
+		C.VIR_CONNECT_IDENTITY_UNIX_GROUP_ID: typedParamsFieldInfo{
+			set: &params.UNIXGroupIDSet,
+			ul:  &params.UNIXGroupID,
+		},
+		C.VIR_CONNECT_IDENTITY_PROCESS_ID: typedParamsFieldInfo{
+			set: &params.ProcessIDSet,
+			l:   &params.ProcessID,
+		},
+		C.VIR_CONNECT_IDENTITY_PROCESS_TIME: typedParamsFieldInfo{
+			set: &params.ProcessTimeSet,
+			ul:  &params.ProcessTime,
+		},
+		C.VIR_CONNECT_IDENTITY_SASL_USER_NAME: typedParamsFieldInfo{
+			set: &params.SASLUserNameSet,
+			s:   &params.SASLUserName,
+		},
+		C.VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME: typedParamsFieldInfo{
+			set: &params.X509DistinguishedNameSet,
+			s:   &params.X509DistinguishedName,
+		},
+		C.VIR_CONNECT_IDENTITY_SELINUX_CONTEXT: typedParamsFieldInfo{
+			set: &params.SELinuxContextSet,
+			s:   &params.SELinuxContext,
+		},
+	}
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectSetIdentity
+func (c *Connect) SetIdentity(ident *ConnectIdentity, flags uint32) error {
+	if C.LIBVIR_VERSION_NUMBER < 5008000 {
+		return makeNotImplementedError("virConnectSetIdentity")
+	}
+	info := getConnectIdentityFieldInfo(ident)
+
+	cparams, cnparams, gerr := typedParamsPackNew(info)
+	if gerr != nil {
+		return gerr
+	}
+
+	defer C.virTypedParamsFree(cparams, cnparams)
+
+	var err C.virError
+	ret := C.virConnectSetIdentityWrapper(c.ptr, cparams, cnparams, C.uint(flags), &err)
+	if ret == -1 {
+		return makeError(&err)
+	}
+
+	return nil
+}
+
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetCapabilities
 func (c *Connect) GetCapabilities() (string, error) {
-	str := C.virConnectGetCapabilities(c.ptr)
+	var err C.virError
+	str := C.virConnectGetCapabilitiesWrapper(c.ptr, &err)
 	if str == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	capabilities := C.GoString(str)
 	C.free(unsafe.Pointer(str))
@@ -501,9 +601,10 @@ func (c *Connect) GetCapabilities() (string, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetInfo
 func (c *Connect) GetNodeInfo() (*NodeInfo, error) {
 	var cinfo C.virNodeInfo
-	result := C.virNodeGetInfo(c.ptr, &cinfo)
+	var err C.virError
+	result := C.virNodeGetInfoWrapper(c.ptr, &cinfo, &err)
 	if result == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NodeInfo{
 		Model:   C.GoString((*C.char)(unsafe.Pointer(&cinfo.model[0]))),
@@ -523,9 +624,10 @@ func (ni *NodeInfo) GetMaxCPUs() uint32 {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetHostname
 func (c *Connect) GetHostname() (string, error) {
-	str := C.virConnectGetHostname(c.ptr)
+	var err C.virError
+	str := C.virConnectGetHostnameWrapper(c.ptr, &err)
 	if str == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	hostname := C.GoString(str)
 	C.free(unsafe.Pointer(str))
@@ -535,17 +637,20 @@ func (c *Connect) GetHostname() (string, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetLibVersion
 func (c *Connect) GetLibVersion() (uint32, error) {
 	var version C.ulong
-	if err := C.virConnectGetLibVersion(c.ptr, &version); err < 0 {
-		return 0, GetLastError()
+	var err C.virError
+	ret := C.virConnectGetLibVersionWrapper(c.ptr, &version, &err)
+	if ret < 0 {
+		return 0, makeError(&err)
 	}
 	return uint32(version), nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetType
 func (c *Connect) GetType() (string, error) {
-	str := C.virConnectGetType(c.ptr)
+	var err C.virError
+	str := C.virConnectGetTypeWrapper(c.ptr, &err)
 	if str == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	hypDriver := C.GoString(str)
 	return hypDriver, nil
@@ -553,9 +658,10 @@ func (c *Connect) GetType() (string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectIsAlive
 func (c *Connect) IsAlive() (bool, error) {
-	result := C.virConnectIsAlive(c.ptr)
+	var err C.virError
+	result := C.virConnectIsAliveWrapper(c.ptr, &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	if result == 1 {
 		return true, nil
@@ -565,9 +671,10 @@ func (c *Connect) IsAlive() (bool, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectIsEncrypted
 func (c *Connect) IsEncrypted() (bool, error) {
-	result := C.virConnectIsEncrypted(c.ptr)
+	var err C.virError
+	result := C.virConnectIsEncryptedWrapper(c.ptr, &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	if result == 1 {
 		return true, nil
@@ -577,9 +684,10 @@ func (c *Connect) IsEncrypted() (bool, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectIsSecure
 func (c *Connect) IsSecure() (bool, error) {
-	result := C.virConnectIsSecure(c.ptr)
+	var err C.virError
+	result := C.virConnectIsSecureWrapper(c.ptr, &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	if result == 1 {
 		return true, nil
@@ -591,12 +699,13 @@ func (c *Connect) IsSecure() (bool, error) {
 func (c *Connect) ListDefinedDomains() ([]string, error) {
 	var names [1024](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numDomains := C.virConnectListDefinedDomains(
+	var err C.virError
+	numDomains := C.virConnectListDefinedDomainsWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		1024)
+		1024, &err)
 	if numDomains == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numDomains)
 	for k := 0; k < int(numDomains); k++ {
@@ -610,9 +719,10 @@ func (c *Connect) ListDefinedDomains() ([]string, error) {
 func (c *Connect) ListDomains() ([]uint32, error) {
 	var cDomainsIds [512](uint32)
 	cDomainsPointer := unsafe.Pointer(&cDomainsIds)
-	numDomains := C.virConnectListDomains(c.ptr, (*C.int)(cDomainsPointer), 512)
+	var err C.virError
+	numDomains := C.virConnectListDomainsWrapper(c.ptr, (*C.int)(cDomainsPointer), 512, &err)
 	if numDomains == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
 	return cDomainsIds[:numDomains], nil
@@ -623,12 +733,13 @@ func (c *Connect) ListInterfaces() ([]string, error) {
 	const maxIfaces = 1024
 	var names [maxIfaces](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numIfaces := C.virConnectListInterfaces(
+	var err C.virError
+	numIfaces := C.virConnectListInterfacesWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxIfaces)
+		maxIfaces, &err)
 	if numIfaces == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numIfaces)
 	for k := 0; k < int(numIfaces); k++ {
@@ -643,12 +754,13 @@ func (c *Connect) ListNetworks() ([]string, error) {
 	const maxNets = 1024
 	var names [maxNets](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numNetworks := C.virConnectListNetworks(
+	var err C.virError
+	numNetworks := C.virConnectListNetworksWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxNets)
+		maxNets, &err)
 	if numNetworks == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numNetworks)
 	for k := 0; k < int(numNetworks); k++ {
@@ -663,12 +775,13 @@ func (c *Connect) ListNWFilters() ([]string, error) {
 	const maxFilters = 1024
 	var names [maxFilters](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numNWFilters := C.virConnectListNWFilters(
+	var err C.virError
+	numNWFilters := C.virConnectListNWFiltersWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxFilters)
+		maxFilters, &err)
 	if numNWFilters == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numNWFilters)
 	for k := 0; k < int(numNWFilters); k++ {
@@ -683,12 +796,13 @@ func (c *Connect) ListStoragePools() ([]string, error) {
 	const maxPools = 1024
 	var names [maxPools](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numStoragePools := C.virConnectListStoragePools(
+	var err C.virError
+	numStoragePools := C.virConnectListStoragePoolsWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxPools)
+		maxPools, &err)
 	if numStoragePools == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numStoragePools)
 	for k := 0; k < int(numStoragePools); k++ {
@@ -703,12 +817,13 @@ func (c *Connect) ListSecrets() ([]string, error) {
 	const maxSecrets = 1024
 	var uuids [maxSecrets](*C.char)
 	uuidsPtr := unsafe.Pointer(&uuids)
-	numSecrets := C.virConnectListSecrets(
+	var err C.virError
+	numSecrets := C.virConnectListSecretsWrapper(
 		c.ptr,
 		(**C.char)(uuidsPtr),
-		maxSecrets)
+		maxSecrets, &err)
 	if numSecrets == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goUuids := make([]string, numSecrets)
 	for k := 0; k < int(numSecrets); k++ {
@@ -725,12 +840,13 @@ func (c *Connect) ListDevices(cap string, flags uint32) ([]string, error) {
 	const maxNodeDevices = 1024
 	var uuids [maxNodeDevices](*C.char)
 	uuidsPtr := unsafe.Pointer(&uuids)
-	numNodeDevices := C.virNodeListDevices(
+	var err C.virError
+	numNodeDevices := C.virNodeListDevicesWrapper(
 		c.ptr, ccap,
 		(**C.char)(uuidsPtr),
-		maxNodeDevices, C.uint(flags))
+		maxNodeDevices, C.uint(flags), &err)
 	if numNodeDevices == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goUuids := make([]string, numNodeDevices)
 	for k := 0; k < int(numNodeDevices); k++ {
@@ -742,9 +858,10 @@ func (c *Connect) ListDevices(cap string, flags uint32) ([]string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virDomainLookupByID
 func (c *Connect) LookupDomainById(id uint32) (*Domain, error) {
-	ptr := C.virDomainLookupByID(c.ptr, C.int(id))
+	var err C.virError
+	ptr := C.virDomainLookupByIDWrapper(c.ptr, C.int(id), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -753,9 +870,10 @@ func (c *Connect) LookupDomainById(id uint32) (*Domain, error) {
 func (c *Connect) LookupDomainByName(id string) (*Domain, error) {
 	cName := C.CString(id)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virDomainLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virDomainLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -764,9 +882,10 @@ func (c *Connect) LookupDomainByName(id string) (*Domain, error) {
 func (c *Connect) LookupDomainByUUIDString(uuid string) (*Domain, error) {
 	cUuid := C.CString(uuid)
 	defer C.free(unsafe.Pointer(cUuid))
-	ptr := C.virDomainLookupByUUIDString(c.ptr, cUuid)
+	var err C.virError
+	ptr := C.virDomainLookupByUUIDStringWrapper(c.ptr, cUuid, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -781,9 +900,10 @@ func (c *Connect) LookupDomainByUUID(uuid []byte) (*Domain, error) {
 	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
 		cUuid[i] = C.uchar(uuid[i])
 	}
-	ptr := C.virDomainLookupByUUID(c.ptr, &cUuid[0])
+	var err C.virError
+	ptr := C.virDomainLookupByUUIDWrapper(c.ptr, &cUuid[0], &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -792,9 +912,10 @@ func (c *Connect) LookupDomainByUUID(uuid []byte) (*Domain, error) {
 func (c *Connect) DomainCreateXML(xmlConfig string, flags DomainCreateFlags) (*Domain, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virDomainCreateXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virDomainCreateXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -807,9 +928,10 @@ func (c *Connect) DomainCreateXMLWithFiles(xmlConfig string, files []os.File, fl
 	for i := 0; i < len(files); i++ {
 		cfiles[i] = C.int(files[i].Fd())
 	}
-	ptr := C.virDomainCreateXMLWithFiles(c.ptr, cXml, C.uint(len(files)), (&cfiles[0]), C.uint(flags))
+	var err C.virError
+	ptr := C.virDomainCreateXMLWithFilesWrapper(c.ptr, cXml, C.uint(len(files)), (&cfiles[0]), C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -818,9 +940,10 @@ func (c *Connect) DomainCreateXMLWithFiles(xmlConfig string, files []os.File, fl
 func (c *Connect) DomainDefineXML(xmlConfig string) (*Domain, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virDomainDefineXML(c.ptr, cXml)
+	var err C.virError
+	ptr := C.virDomainDefineXMLWrapper(c.ptr, cXml, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -828,13 +951,14 @@ func (c *Connect) DomainDefineXML(xmlConfig string) (*Domain, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virDomainDefineXMLFlags
 func (c *Connect) DomainDefineXMLFlags(xmlConfig string, flags DomainDefineFlags) (*Domain, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002012 {
-		return nil, GetNotImplementedError("virDomainDefineXMLFlags")
+		return nil, makeNotImplementedError("virDomainDefineXMLFlags")
 	}
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virDomainDefineXMLFlagsCompat(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virDomainDefineXMLFlagsWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -844,12 +968,13 @@ func (c *Connect) ListDefinedInterfaces() ([]string, error) {
 	const maxIfaces = 1024
 	var names [maxIfaces](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numIfaces := C.virConnectListDefinedInterfaces(
+	var err C.virError
+	numIfaces := C.virConnectListDefinedInterfacesWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxIfaces)
+		maxIfaces, &err)
 	if numIfaces == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numIfaces)
 	for k := 0; k < int(numIfaces); k++ {
@@ -864,12 +989,13 @@ func (c *Connect) ListDefinedNetworks() ([]string, error) {
 	const maxNets = 1024
 	var names [maxNets](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numNetworks := C.virConnectListDefinedNetworks(
+	var err C.virError
+	numNetworks := C.virConnectListDefinedNetworksWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxNets)
+		maxNets, &err)
 	if numNetworks == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numNetworks)
 	for k := 0; k < int(numNetworks); k++ {
@@ -884,12 +1010,13 @@ func (c *Connect) ListDefinedStoragePools() ([]string, error) {
 	const maxPools = 1024
 	var names [maxPools](*C.char)
 	namesPtr := unsafe.Pointer(&names)
-	numStoragePools := C.virConnectListDefinedStoragePools(
+	var err C.virError
+	numStoragePools := C.virConnectListDefinedStoragePoolsWrapper(
 		c.ptr,
 		(**C.char)(namesPtr),
-		maxPools)
+		maxPools, &err)
 	if numStoragePools == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	goNames := make([]string, numStoragePools)
 	for k := 0; k < int(numStoragePools); k++ {
@@ -901,90 +1028,100 @@ func (c *Connect) ListDefinedStoragePools() ([]string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virConnectNumOfDefinedDomains
 func (c *Connect) NumOfDefinedDomains() (int, error) {
-	result := int(C.virConnectNumOfDefinedDomains(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfDefinedDomainsWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virConnectNumOfDefinedInterfaces
 func (c *Connect) NumOfDefinedInterfaces() (int, error) {
-	result := int(C.virConnectNumOfDefinedInterfaces(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfDefinedInterfacesWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virConnectNumOfDefinedNetworks
 func (c *Connect) NumOfDefinedNetworks() (int, error) {
-	result := int(C.virConnectNumOfDefinedNetworks(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfDefinedNetworksWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-storage.html#virConnectNumOfDefinedStoragePools
 func (c *Connect) NumOfDefinedStoragePools() (int, error) {
-	result := int(C.virConnectNumOfDefinedStoragePools(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfDefinedStoragePoolsWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virConnectNumOfDomains
 func (c *Connect) NumOfDomains() (int, error) {
-	result := int(C.virConnectNumOfDomains(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfDomainsWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-storage.html#virConnectNumOfStoragePools
 func (c *Connect) NumOfStoragePools() (int, error) {
-	result := int(C.virConnectNumOfStoragePools(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfStoragePoolsWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virConnectNumOfInterfaces
 func (c *Connect) NumOfInterfaces() (int, error) {
-	result := int(C.virConnectNumOfInterfaces(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfInterfacesWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virConnectNumOfNetworks
 func (c *Connect) NumOfNetworks() (int, error) {
-	result := int(C.virConnectNumOfNetworks(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfNetworksWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-nwfilter.html#virConnectNumOfNWFilters
 func (c *Connect) NumOfNWFilters() (int, error) {
-	result := int(C.virConnectNumOfNWFilters(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfNWFiltersWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-secret.html#virConnectNumOfSecrets
 func (c *Connect) NumOfSecrets() (int, error) {
-	result := int(C.virConnectNumOfSecrets(c.ptr))
+	var err C.virError
+	result := int(C.virConnectNumOfSecretsWrapper(c.ptr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
@@ -993,9 +1130,10 @@ func (c *Connect) NumOfSecrets() (int, error) {
 func (c *Connect) NumOfDevices(cap string, flags uint32) (int, error) {
 	ccap := C.CString(cap)
 	defer C.free(unsafe.Pointer(ccap))
-	result := int(C.virNodeNumOfDevices(c.ptr, ccap, C.uint(flags)))
+	var err C.virError
+	result := int(C.virNodeNumOfDevicesWrapper(c.ptr, ccap, C.uint(flags), &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
@@ -1004,9 +1142,10 @@ func (c *Connect) NumOfDevices(cap string, flags uint32) (int, error) {
 func (c *Connect) NetworkDefineXML(xmlConfig string) (*Network, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virNetworkDefineXML(c.ptr, cXml)
+	var err C.virError
+	ptr := C.virNetworkDefineXMLWrapper(c.ptr, cXml, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Network{ptr: ptr}, nil
 }
@@ -1015,9 +1154,10 @@ func (c *Connect) NetworkDefineXML(xmlConfig string) (*Network, error) {
 func (c *Connect) NetworkCreateXML(xmlConfig string) (*Network, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virNetworkCreateXML(c.ptr, cXml)
+	var err C.virError
+	ptr := C.virNetworkCreateXMLWrapper(c.ptr, cXml, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Network{ptr: ptr}, nil
 }
@@ -1026,9 +1166,10 @@ func (c *Connect) NetworkCreateXML(xmlConfig string) (*Network, error) {
 func (c *Connect) LookupNetworkByName(name string) (*Network, error) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virNetworkLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virNetworkLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Network{ptr: ptr}, nil
 }
@@ -1037,9 +1178,10 @@ func (c *Connect) LookupNetworkByName(name string) (*Network, error) {
 func (c *Connect) LookupNetworkByUUIDString(uuid string) (*Network, error) {
 	cUuid := C.CString(uuid)
 	defer C.free(unsafe.Pointer(cUuid))
-	ptr := C.virNetworkLookupByUUIDString(c.ptr, cUuid)
+	var err C.virError
+	ptr := C.virNetworkLookupByUUIDStringWrapper(c.ptr, cUuid, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Network{ptr: ptr}, nil
 }
@@ -1054,29 +1196,32 @@ func (c *Connect) LookupNetworkByUUID(uuid []byte) (*Network, error) {
 	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
 		cUuid[i] = C.uchar(uuid[i])
 	}
-	ptr := C.virNetworkLookupByUUID(c.ptr, &cUuid[0])
+	var err C.virError
+	ptr := C.virNetworkLookupByUUIDWrapper(c.ptr, &cUuid[0], &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Network{ptr: ptr}, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectSetKeepAlive
 func (c *Connect) SetKeepAlive(interval int, count uint) error {
-	res := int(C.virConnectSetKeepAlive(c.ptr, C.int(interval), C.uint(count)))
+	var err C.virError
+	res := int(C.virConnectSetKeepAliveWrapper(c.ptr, C.int(interval), C.uint(count), &err))
 	switch res {
 	case 0:
 		return nil
 	default:
-		return GetLastError()
+		return makeError(&err)
 	}
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetSysinfo
 func (c *Connect) GetSysinfo(flags uint32) (string, error) {
-	cStr := C.virConnectGetSysinfo(c.ptr, C.uint(flags))
+	var err C.virError
+	cStr := C.virConnectGetSysinfoWrapper(c.ptr, C.uint(flags), &err)
 	if cStr == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	info := C.GoString(cStr)
 	C.free(unsafe.Pointer(cStr))
@@ -1085,9 +1230,10 @@ func (c *Connect) GetSysinfo(flags uint32) (string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetURI
 func (c *Connect) GetURI() (string, error) {
-	cStr := C.virConnectGetURI(c.ptr)
+	var err C.virError
+	cStr := C.virConnectGetURIWrapper(c.ptr, &err)
 	if cStr == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	uri := C.GoString(cStr)
 	C.free(unsafe.Pointer(cStr))
@@ -1101,9 +1247,10 @@ func (c *Connect) GetMaxVcpus(typeAttr string) (int, error) {
 		cTypeAttr = C.CString(typeAttr)
 		defer C.free(unsafe.Pointer(cTypeAttr))
 	}
-	result := int(C.virConnectGetMaxVcpus(c.ptr, cTypeAttr))
+	var err C.virError
+	result := int(C.virConnectGetMaxVcpusWrapper(c.ptr, cTypeAttr, &err))
 	if result == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return result, nil
 }
@@ -1112,9 +1259,10 @@ func (c *Connect) GetMaxVcpus(typeAttr string) (int, error) {
 func (c *Connect) InterfaceDefineXML(xmlConfig string, flags uint32) (*Interface, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virInterfaceDefineXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virInterfaceDefineXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Interface{ptr: ptr}, nil
 }
@@ -1123,9 +1271,10 @@ func (c *Connect) InterfaceDefineXML(xmlConfig string, flags uint32) (*Interface
 func (c *Connect) LookupInterfaceByName(name string) (*Interface, error) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virInterfaceLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virInterfaceLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Interface{ptr: ptr}, nil
 }
@@ -1134,9 +1283,10 @@ func (c *Connect) LookupInterfaceByName(name string) (*Interface, error) {
 func (c *Connect) LookupInterfaceByMACString(mac string) (*Interface, error) {
 	cName := C.CString(mac)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virInterfaceLookupByMACString(c.ptr, cName)
+	var err C.virError
+	ptr := C.virInterfaceLookupByMACStringWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Interface{ptr: ptr}, nil
 }
@@ -1145,9 +1295,10 @@ func (c *Connect) LookupInterfaceByMACString(mac string) (*Interface, error) {
 func (c *Connect) StoragePoolDefineXML(xmlConfig string, flags uint32) (*StoragePool, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virStoragePoolDefineXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virStoragePoolDefineXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StoragePool{ptr: ptr}, nil
 }
@@ -1156,9 +1307,10 @@ func (c *Connect) StoragePoolDefineXML(xmlConfig string, flags uint32) (*Storage
 func (c *Connect) StoragePoolCreateXML(xmlConfig string, flags StoragePoolCreateFlags) (*StoragePool, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virStoragePoolCreateXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virStoragePoolCreateXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StoragePool{ptr: ptr}, nil
 }
@@ -1167,9 +1319,10 @@ func (c *Connect) StoragePoolCreateXML(xmlConfig string, flags StoragePoolCreate
 func (c *Connect) LookupStoragePoolByName(name string) (*StoragePool, error) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virStoragePoolLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virStoragePoolLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StoragePool{ptr: ptr}, nil
 }
@@ -1178,9 +1331,10 @@ func (c *Connect) LookupStoragePoolByName(name string) (*StoragePool, error) {
 func (c *Connect) LookupStoragePoolByUUIDString(uuid string) (*StoragePool, error) {
 	cUuid := C.CString(uuid)
 	defer C.free(unsafe.Pointer(cUuid))
-	ptr := C.virStoragePoolLookupByUUIDString(c.ptr, cUuid)
+	var err C.virError
+	ptr := C.virStoragePoolLookupByUUIDStringWrapper(c.ptr, cUuid, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StoragePool{ptr: ptr}, nil
 }
@@ -1195,9 +1349,25 @@ func (c *Connect) LookupStoragePoolByUUID(uuid []byte) (*StoragePool, error) {
 	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
 		cUuid[i] = C.uchar(uuid[i])
 	}
-	ptr := C.virStoragePoolLookupByUUID(c.ptr, &cUuid[0])
+	var err C.virError
+	ptr := C.virStoragePoolLookupByUUIDWrapper(c.ptr, &cUuid[0], &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
+	}
+	return &StoragePool{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-storage.html#virStoragePoolLookupByTargetPath
+func (c *Connect) LookupStoragePoolByTargetPath(path string) (*StoragePool, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4001000 {
+		return nil, makeNotImplementedError("virStoragePoolLookupByTargetPath")
+	}
+	cPath := C.CString(path)
+	defer C.free(unsafe.Pointer(cPath))
+	var err C.virError
+	ptr := C.virStoragePoolLookupByTargetPathWrapper(c.ptr, cPath, &err)
+	if ptr == nil {
+		return nil, makeError(&err)
 	}
 	return &StoragePool{ptr: ptr}, nil
 }
@@ -1206,9 +1376,10 @@ func (c *Connect) LookupStoragePoolByUUID(uuid []byte) (*StoragePool, error) {
 func (c *Connect) NWFilterDefineXML(xmlConfig string) (*NWFilter, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virNWFilterDefineXML(c.ptr, cXml)
+	var err C.virError
+	ptr := C.virNWFilterDefineXMLWrapper(c.ptr, cXml, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NWFilter{ptr: ptr}, nil
 }
@@ -1217,9 +1388,10 @@ func (c *Connect) NWFilterDefineXML(xmlConfig string) (*NWFilter, error) {
 func (c *Connect) LookupNWFilterByName(name string) (*NWFilter, error) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virNWFilterLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virNWFilterLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NWFilter{ptr: ptr}, nil
 }
@@ -1228,9 +1400,10 @@ func (c *Connect) LookupNWFilterByName(name string) (*NWFilter, error) {
 func (c *Connect) LookupNWFilterByUUIDString(uuid string) (*NWFilter, error) {
 	cUuid := C.CString(uuid)
 	defer C.free(unsafe.Pointer(cUuid))
-	ptr := C.virNWFilterLookupByUUIDString(c.ptr, cUuid)
+	var err C.virError
+	ptr := C.virNWFilterLookupByUUIDStringWrapper(c.ptr, cUuid, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NWFilter{ptr: ptr}, nil
 }
@@ -1245,20 +1418,37 @@ func (c *Connect) LookupNWFilterByUUID(uuid []byte) (*NWFilter, error) {
 	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
 		cUuid[i] = C.uchar(uuid[i])
 	}
-	ptr := C.virNWFilterLookupByUUID(c.ptr, &cUuid[0])
+	var err C.virError
+	ptr := C.virNWFilterLookupByUUIDWrapper(c.ptr, &cUuid[0], &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NWFilter{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-nwfilter.html#virNWFilterBindingLookupByPortDev
+func (c *Connect) LookupNWFilterBindingByPortDev(name string) (*NWFilterBinding, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4005000 {
+		return nil, makeNotImplementedError("virNWFilterBindingLookupByPortDev")
+	}
+	cName := C.CString(name)
+	defer C.free(unsafe.Pointer(cName))
+	var err C.virError
+	ptr := C.virNWFilterBindingLookupByPortDevWrapper(c.ptr, cName, &err)
+	if ptr == nil {
+		return nil, makeError(&err)
+	}
+	return &NWFilterBinding{ptr: ptr}, nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-storage.html#virStorageVolLookupByKey
 func (c *Connect) LookupStorageVolByKey(key string) (*StorageVol, error) {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	ptr := C.virStorageVolLookupByKey(c.ptr, cKey)
+	var err C.virError
+	ptr := C.virStorageVolLookupByKeyWrapper(c.ptr, cKey, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StorageVol{ptr: ptr}, nil
 }
@@ -1267,9 +1457,10 @@ func (c *Connect) LookupStorageVolByKey(key string) (*StorageVol, error) {
 func (c *Connect) LookupStorageVolByPath(path string) (*StorageVol, error) {
 	cPath := C.CString(path)
 	defer C.free(unsafe.Pointer(cPath))
-	ptr := C.virStorageVolLookupByPath(c.ptr, cPath)
+	var err C.virError
+	ptr := C.virStorageVolLookupByPathWrapper(c.ptr, cPath, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &StorageVol{ptr: ptr}, nil
 }
@@ -1278,9 +1469,10 @@ func (c *Connect) LookupStorageVolByPath(path string) (*StorageVol, error) {
 func (c *Connect) SecretDefineXML(xmlConfig string, flags uint32) (*Secret, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virSecretDefineXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virSecretDefineXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Secret{ptr: ptr}, nil
 }
@@ -1295,9 +1487,10 @@ func (c *Connect) LookupSecretByUUID(uuid []byte) (*Secret, error) {
 	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
 		cUuid[i] = C.uchar(uuid[i])
 	}
-	ptr := C.virSecretLookupByUUID(c.ptr, &cUuid[0])
+	var err C.virError
+	ptr := C.virSecretLookupByUUIDWrapper(c.ptr, &cUuid[0], &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Secret{ptr: ptr}, nil
 }
@@ -1306,9 +1499,10 @@ func (c *Connect) LookupSecretByUUID(uuid []byte) (*Secret, error) {
 func (c *Connect) LookupSecretByUUIDString(uuid string) (*Secret, error) {
 	cUuid := C.CString(uuid)
 	defer C.free(unsafe.Pointer(cUuid))
-	ptr := C.virSecretLookupByUUIDString(c.ptr, cUuid)
+	var err C.virError
+	ptr := C.virSecretLookupByUUIDStringWrapper(c.ptr, cUuid, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Secret{ptr: ptr}, nil
 }
@@ -1317,9 +1511,10 @@ func (c *Connect) LookupSecretByUUIDString(uuid string) (*Secret, error) {
 func (c *Connect) LookupSecretByUsage(usageType SecretUsageType, usageID string) (*Secret, error) {
 	cUsageID := C.CString(usageID)
 	defer C.free(unsafe.Pointer(cUsageID))
-	ptr := C.virSecretLookupByUsage(c.ptr, C.int(usageType), cUsageID)
+	var err C.virError
+	ptr := C.virSecretLookupByUsageWrapper(c.ptr, C.int(usageType), cUsageID, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Secret{ptr: ptr}, nil
 }
@@ -1328,9 +1523,10 @@ func (c *Connect) LookupSecretByUsage(usageType SecretUsageType, usageID string)
 func (c *Connect) LookupDeviceByName(id string) (*NodeDevice, error) {
 	cName := C.CString(id)
 	defer C.free(unsafe.Pointer(cName))
-	ptr := C.virNodeDeviceLookupByName(c.ptr, cName)
+	var err C.virError
+	ptr := C.virNodeDeviceLookupByNameWrapper(c.ptr, cName, &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NodeDevice{ptr: ptr}, nil
 }
@@ -1341,9 +1537,10 @@ func (c *Connect) LookupDeviceSCSIHostByWWN(wwnn, wwpn string, flags uint32) (*N
 	cWwpn := C.CString(wwpn)
 	defer C.free(unsafe.Pointer(cWwnn))
 	defer C.free(unsafe.Pointer(cWwpn))
-	ptr := C.virNodeDeviceLookupSCSIHostByWWN(c.ptr, cWwnn, cWwpn, C.uint(flags))
+	var err C.virError
+	ptr := C.virNodeDeviceLookupSCSIHostByWWNWrapper(c.ptr, cWwnn, cWwpn, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NodeDevice{ptr: ptr}, nil
 }
@@ -1352,9 +1549,10 @@ func (c *Connect) LookupDeviceSCSIHostByWWN(wwnn, wwpn string, flags uint32) (*N
 func (c *Connect) DeviceCreateXML(xmlConfig string, flags uint32) (*NodeDevice, error) {
 	cXml := C.CString(string(xmlConfig))
 	defer C.free(unsafe.Pointer(cXml))
-	ptr := C.virNodeDeviceCreateXML(c.ptr, cXml, C.uint(flags))
+	var err C.virError
+	ptr := C.virNodeDeviceCreateXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &NodeDevice{ptr: ptr}, nil
 }
@@ -1362,9 +1560,10 @@ func (c *Connect) DeviceCreateXML(xmlConfig string, flags uint32) (*NodeDevice, 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virConnectListAllInterfaces
 func (c *Connect) ListAllInterfaces(flags ConnectListAllInterfacesFlags) ([]Interface, error) {
 	var cList *C.virInterfacePtr
-	numIfaces := C.virConnectListAllInterfaces(c.ptr, (**C.virInterfacePtr)(&cList), C.uint(flags))
+	var err C.virError
+	numIfaces := C.virConnectListAllInterfacesWrapper(c.ptr, (**C.virInterfacePtr)(&cList), C.uint(flags), &err)
 	if numIfaces == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1383,9 +1582,10 @@ func (c *Connect) ListAllInterfaces(flags ConnectListAllInterfacesFlags) ([]Inte
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virConnectListAllNetworks
 func (c *Connect) ListAllNetworks(flags ConnectListAllNetworksFlags) ([]Network, error) {
 	var cList *C.virNetworkPtr
-	numNets := C.virConnectListAllNetworks(c.ptr, (**C.virNetworkPtr)(&cList), C.uint(flags))
+	var err C.virError
+	numNets := C.virConnectListAllNetworksWrapper(c.ptr, (**C.virNetworkPtr)(&cList), C.uint(flags), &err)
 	if numNets == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1404,9 +1604,10 @@ func (c *Connect) ListAllNetworks(flags ConnectListAllNetworksFlags) ([]Network,
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virConnectListAllDomains
 func (c *Connect) ListAllDomains(flags ConnectListAllDomainsFlags) ([]Domain, error) {
 	var cList *C.virDomainPtr
-	numDomains := C.virConnectListAllDomains(c.ptr, (**C.virDomainPtr)(&cList), C.uint(flags))
+	var err C.virError
+	numDomains := C.virConnectListAllDomainsWrapper(c.ptr, (**C.virDomainPtr)(&cList), C.uint(flags), &err)
 	if numDomains == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1425,9 +1626,10 @@ func (c *Connect) ListAllDomains(flags ConnectListAllDomainsFlags) ([]Domain, er
 // See also https://libvirt.org/html/libvirt-libvirt-nwfilter.html#virConnectListAllNWFilters
 func (c *Connect) ListAllNWFilters(flags uint32) ([]NWFilter, error) {
 	var cList *C.virNWFilterPtr
-	numNWFilters := C.virConnectListAllNWFilters(c.ptr, (**C.virNWFilterPtr)(&cList), C.uint(flags))
+	var err C.virError
+	numNWFilters := C.virConnectListAllNWFiltersWrapper(c.ptr, (**C.virNWFilterPtr)(&cList), C.uint(flags), &err)
 	if numNWFilters == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1443,12 +1645,38 @@ func (c *Connect) ListAllNWFilters(flags uint32) ([]NWFilter, error) {
 	return filters, nil
 }
 
+// See also https://libvirt.org/html/libvirt-libvirt-nwfilter.html#virConnectListAllNWFilterBindings
+func (c *Connect) ListAllNWFilterBindings(flags uint32) ([]NWFilterBinding, error) {
+	var cList *C.virNWFilterBindingPtr
+	if C.LIBVIR_VERSION_NUMBER < 4005000 {
+		return []NWFilterBinding{}, makeNotImplementedError("virConnectListAllNWFilterBindings")
+	}
+	var err C.virError
+	numNWFilters := C.virConnectListAllNWFilterBindingsWrapper(c.ptr, (**C.virNWFilterBindingPtr)(&cList), C.uint(flags), &err)
+	if numNWFilters == -1 {
+		return nil, makeError(&err)
+	}
+	hdr := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(cList)),
+		Len:  int(numNWFilters),
+		Cap:  int(numNWFilters),
+	}
+	var filters []NWFilterBinding
+	slice := *(*[]C.virNWFilterBindingPtr)(unsafe.Pointer(&hdr))
+	for _, ptr := range slice {
+		filters = append(filters, NWFilterBinding{ptr})
+	}
+	C.free(unsafe.Pointer(cList))
+	return filters, nil
+}
+
 // See also https://libvirt.org/html/libvirt-libvirt-storage.html#virConnectListAllStoragePools
 func (c *Connect) ListAllStoragePools(flags ConnectListAllStoragePoolsFlags) ([]StoragePool, error) {
 	var cList *C.virStoragePoolPtr
-	numPools := C.virConnectListAllStoragePools(c.ptr, (**C.virStoragePoolPtr)(&cList), C.uint(flags))
+	var err C.virError
+	numPools := C.virConnectListAllStoragePoolsWrapper(c.ptr, (**C.virStoragePoolPtr)(&cList), C.uint(flags), &err)
 	if numPools == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1467,9 +1695,10 @@ func (c *Connect) ListAllStoragePools(flags ConnectListAllStoragePoolsFlags) ([]
 // See also https://libvirt.org/html/libvirt-libvirt-secret.html#virConnectListAllSecrets
 func (c *Connect) ListAllSecrets(flags ConnectListAllSecretsFlags) ([]Secret, error) {
 	var cList *C.virSecretPtr
-	numPools := C.virConnectListAllSecrets(c.ptr, (**C.virSecretPtr)(&cList), C.uint(flags))
+	var err C.virError
+	numPools := C.virConnectListAllSecretsWrapper(c.ptr, (**C.virSecretPtr)(&cList), C.uint(flags), &err)
 	if numPools == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1488,9 +1717,10 @@ func (c *Connect) ListAllSecrets(flags ConnectListAllSecretsFlags) ([]Secret, er
 // See also https://libvirt.org/html/libvirt-libvirt-nodedev.html#virConnectListAllNodeDevices
 func (c *Connect) ListAllNodeDevices(flags ConnectListAllNodeDeviceFlags) ([]NodeDevice, error) {
 	var cList *C.virNodeDevicePtr
-	numPools := C.virConnectListAllNodeDevices(c.ptr, (**C.virNodeDevicePtr)(&cList), C.uint(flags))
+	var err C.virError
+	numPools := C.virConnectListAllNodeDevicesWrapper(c.ptr, (**C.virNodeDevicePtr)(&cList), C.uint(flags), &err)
 	if numPools == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cList)),
@@ -1508,27 +1738,30 @@ func (c *Connect) ListAllNodeDevices(flags ConnectListAllNodeDeviceFlags) ([]Nod
 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virInterfaceChangeBegin
 func (c *Connect) InterfaceChangeBegin(flags uint32) error {
-	ret := C.virInterfaceChangeBegin(c.ptr, C.uint(flags))
+	var err C.virError
+	ret := C.virInterfaceChangeBeginWrapper(c.ptr, C.uint(flags), &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virInterfaceChangeCommit
 func (c *Connect) InterfaceChangeCommit(flags uint32) error {
-	ret := C.virInterfaceChangeCommit(c.ptr, C.uint(flags))
+	var err C.virError
+	ret := C.virInterfaceChangeCommitWrapper(c.ptr, C.uint(flags), &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-interface.html#virInterfaceChangeRollback
 func (c *Connect) InterfaceChangeRollback(flags uint32) error {
-	ret := C.virInterfaceChangeRollback(c.ptr, C.uint(flags))
+	var err C.virError
+	ret := C.virInterfaceChangeRollbackWrapper(c.ptr, C.uint(flags), &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
@@ -1536,7 +1769,7 @@ func (c *Connect) InterfaceChangeRollback(flags uint32) error {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeAllocPages
 func (c *Connect) AllocPages(pageSizes map[int]int64, startCell int, cellCount uint, flags NodeAllocPagesFlags) (int, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002009 {
-		return 0, GetNotImplementedError("virNodeAllocPages")
+		return 0, makeNotImplementedError("virNodeAllocPages")
 	}
 	cpages := make([]C.uint, len(pageSizes))
 	ccounts := make([]C.ulonglong, len(pageSizes))
@@ -1548,10 +1781,11 @@ func (c *Connect) AllocPages(pageSizes map[int]int64, startCell int, cellCount u
 		i++
 	}
 
-	ret := C.virNodeAllocPagesCompat(c.ptr, C.uint(len(pageSizes)), (*C.uint)(unsafe.Pointer(&cpages)),
-		(*C.ulonglong)(unsafe.Pointer(&ccounts)), C.int(startCell), C.uint(cellCount), C.uint(flags))
+	var err C.virError
+	ret := C.virNodeAllocPagesWrapper(c.ptr, C.uint(len(pageSizes)), (*C.uint)(unsafe.Pointer(&cpages)),
+		(*C.ulonglong)(unsafe.Pointer(&ccounts)), C.int(startCell), C.uint(cellCount), C.uint(flags), &err)
 	if ret == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 
 	return int(ret), nil
@@ -1561,20 +1795,21 @@ func (c *Connect) AllocPages(pageSizes map[int]int64, startCell int, cellCount u
 func (c *Connect) GetCPUMap(flags uint32) (map[int]bool, uint, error) {
 	var ccpumap *C.uchar
 	var conline C.uint
-	ret := C.virNodeGetCPUMap(c.ptr, &ccpumap, &conline, C.uint(flags))
+	var err C.virError
+	ret := C.virNodeGetCPUMapWrapper(c.ptr, &ccpumap, &conline, C.uint(flags), &err)
 	if ret == -1 {
-		return map[int]bool{}, 0, GetLastError()
+		return map[int]bool{}, 0, makeError(&err)
 	}
 	defer C.free(unsafe.Pointer(ccpumap))
 
-	cpumapbytes := C.GoBytes(unsafe.Pointer(ccpumap), C.int(ret/8))
+	cpumapbytes := C.GoBytes(unsafe.Pointer(ccpumap), C.int((ret+7)/8))
 
-	cpumap := make(map[int]bool, 0)
+	cpumap := make(map[int]bool, ret)
 	for i := 0; i < int(ret); i++ {
 		idx := int(i / 8)
 		val := byte(cpumapbytes[idx])
 		shift := i % 8
-		cpumap[i] = (val & (1 << uint(shift))) == 1
+		cpumap[i] = (val & (1 << uint(shift))) != 0
 	}
 
 	return cpumap, uint(conline), nil
@@ -1597,21 +1832,22 @@ type NodeCPUStats struct {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetCPUStats
 func (c *Connect) GetCPUStats(cpuNum int, flags uint32) (*NodeCPUStats, error) {
-	var nparams C.int
+	var cnparams C.int
 
-	ret := C.virNodeGetCPUStats(c.ptr, C.int(cpuNum), nil, &nparams, C.uint(0))
+	var err C.virError
+	ret := C.virNodeGetCPUStatsWrapper(c.ptr, C.int(cpuNum), nil, &cnparams, C.uint(0), &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
-	params := make([]C.virNodeCPUStats, nparams)
-	ret = C.virNodeGetCPUStats(c.ptr, C.int(cpuNum), (*C.virNodeCPUStats)(unsafe.Pointer(&params[0])), &nparams, C.uint(flags))
+	params := make([]C.virNodeCPUStats, cnparams)
+	ret = C.virNodeGetCPUStatsWrapper(c.ptr, C.int(cpuNum), (*C.virNodeCPUStats)(unsafe.Pointer(&params[0])), &cnparams, C.uint(flags), &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
 	stats := &NodeCPUStats{}
-	for i := 0; i < int(nparams); i++ {
+	for i := 0; i < int(cnparams); i++ {
 		param := params[i]
 		field := C.GoString((*C.char)(unsafe.Pointer(&param.field)))
 		switch field {
@@ -1642,9 +1878,10 @@ func (c *Connect) GetCPUStats(cpuNum int, flags uint32) (*NodeCPUStats, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetCellsFreeMemory
 func (c *Connect) GetCellsFreeMemory(startCell int, maxCells int) ([]uint64, error) {
 	cmem := make([]C.ulonglong, maxCells)
-	ret := C.virNodeGetCellsFreeMemory(c.ptr, (*C.ulonglong)(unsafe.Pointer(&cmem[0])), C.int(startCell), C.int(maxCells))
+	var err C.virError
+	ret := C.virNodeGetCellsFreeMemoryWrapper(c.ptr, (*C.ulonglong)(unsafe.Pointer(&cmem[0])), C.int(startCell), C.int(maxCells), &err)
 	if ret == -1 {
-		return []uint64{}, GetLastError()
+		return []uint64{}, makeError(&err)
 	}
 
 	mem := make([]uint64, ret)
@@ -1657,9 +1894,10 @@ func (c *Connect) GetCellsFreeMemory(startCell int, maxCells int) ([]uint64, err
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetFreeMemory
 func (c *Connect) GetFreeMemory() (uint64, error) {
-	ret := C.virNodeGetFreeMemory(c.ptr)
+	var err C.virError
+	ret := C.virNodeGetFreeMemoryWrapper(c.ptr, &err)
 	if ret == 0 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 
 	return (uint64)(ret), nil
@@ -1668,7 +1906,7 @@ func (c *Connect) GetFreeMemory() (uint64, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetFreePages
 func (c *Connect) GetFreePages(pageSizes []uint64, startCell int, maxCells uint, flags uint32) ([]uint64, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002006 {
-		return []uint64{}, GetNotImplementedError("virNodeGetFreePages")
+		return []uint64{}, makeNotImplementedError("virNodeGetFreePages")
 	}
 	cpageSizes := make([]C.uint, len(pageSizes))
 	ccounts := make([]C.ulonglong, len(pageSizes)*int(maxCells))
@@ -1677,10 +1915,11 @@ func (c *Connect) GetFreePages(pageSizes []uint64, startCell int, maxCells uint,
 		cpageSizes[i] = C.uint(pageSizes[i])
 	}
 
-	ret := C.virNodeGetFreePagesCompat(c.ptr, C.uint(len(pageSizes)), (*C.uint)(unsafe.Pointer(&cpageSizes)), C.int(startCell),
-		C.uint(maxCells), (*C.ulonglong)(unsafe.Pointer(&ccounts)), C.uint(flags))
+	var err C.virError
+	ret := C.virNodeGetFreePagesWrapper(c.ptr, C.uint(len(pageSizes)), (*C.uint)(unsafe.Pointer(&cpageSizes[0])), C.int(startCell),
+		C.uint(maxCells), (*C.ulonglong)(unsafe.Pointer(&ccounts[0])), C.uint(flags), &err)
 	if ret == -1 {
-		return []uint64{}, GetLastError()
+		return []uint64{}, makeError(&err)
 	}
 
 	counts := make([]uint64, ret)
@@ -1752,24 +1991,24 @@ func (c *Connect) GetMemoryParameters(flags uint32) (*NodeMemoryParameters, erro
 	params := &NodeMemoryParameters{}
 	info := getMemoryParameterFieldInfo(params)
 
-	var nparams C.int
+	var cnparams C.int
 
-	ret := C.virNodeGetMemoryParameters(c.ptr, nil, &nparams, C.uint(0))
+	var err C.virError
+	ret := C.virNodeGetMemoryParametersWrapper(c.ptr, nil, &cnparams, C.uint(0), &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
-	cparams := make([]C.virTypedParameter, nparams)
-	ret = C.virNodeGetMemoryParameters(c.ptr, (*C.virTypedParameter)(unsafe.Pointer(&cparams[0])), &nparams, C.uint(flags))
+	cparams := typedParamsNew(cnparams)
+	defer C.virTypedParamsFree(cparams, cnparams)
+	ret = C.virNodeGetMemoryParametersWrapper(c.ptr, cparams, &cnparams, C.uint(flags), &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
-	defer C.virTypedParamsClear((*C.virTypedParameter)(unsafe.Pointer(&cparams[0])), nparams)
-
-	_, err := typedParamsUnpack(cparams, info)
-	if err != nil {
-		return nil, err
+	_, gerr := typedParamsUnpack(cparams, cnparams, info)
+	if gerr != nil {
+		return nil, gerr
 	}
 
 	return params, nil
@@ -1788,21 +2027,22 @@ type NodeMemoryStats struct {
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetMemoryStats
 func (c *Connect) GetMemoryStats(cellNum int, flags uint32) (*NodeMemoryStats, error) {
-	var nparams C.int
+	var cnparams C.int
 
-	ret := C.virNodeGetMemoryStats(c.ptr, C.int(cellNum), nil, &nparams, 0)
+	var err C.virError
+	ret := C.virNodeGetMemoryStatsWrapper(c.ptr, C.int(cellNum), nil, &cnparams, 0, &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
-	params := make([]C.virNodeMemoryStats, nparams)
-	ret = C.virNodeGetMemoryStats(c.ptr, C.int(cellNum), (*C.virNodeMemoryStats)(unsafe.Pointer(&params[0])), &nparams, C.uint(flags))
+	params := make([]C.virNodeMemoryStats, cnparams)
+	ret = C.virNodeGetMemoryStatsWrapper(c.ptr, C.int(cellNum), (*C.virNodeMemoryStats)(unsafe.Pointer(&params[0])), &cnparams, C.uint(flags), &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
 	stats := &NodeMemoryStats{}
-	for i := 0; i < int(nparams); i++ {
+	for i := 0; i < int(cnparams); i++ {
 		param := params[i]
 		field := C.GoString((*C.char)(unsafe.Pointer(&param.field)))
 		switch field {
@@ -1832,9 +2072,10 @@ type NodeSecurityModel struct {
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetSecurityModel
 func (c *Connect) GetSecurityModel() (*NodeSecurityModel, error) {
 	var cmodel C.virSecurityModel
-	ret := C.virNodeGetSecurityModel(c.ptr, &cmodel)
+	var err C.virError
+	ret := C.virNodeGetSecurityModelWrapper(c.ptr, &cmodel, &err)
 	if ret == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
 	return &NodeSecurityModel{
@@ -1847,36 +2088,28 @@ func (c *Connect) GetSecurityModel() (*NodeSecurityModel, error) {
 func (c *Connect) SetMemoryParameters(params *NodeMemoryParameters, flags uint32) error {
 	info := getMemoryParameterFieldInfo(params)
 
-	var nparams C.int
+	cparams, cnparams, gerr := typedParamsPackNew(info)
+	if gerr != nil {
+		return gerr
+	}
 
-	ret := C.virNodeGetMemoryParameters(c.ptr, nil, &nparams, 0)
+	defer C.virTypedParamsFree(cparams, cnparams)
+
+	var err C.virError
+	ret := C.virNodeSetMemoryParametersWrapper(c.ptr, cparams, cnparams, C.uint(flags), &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
-
-	cparams := make([]C.virTypedParameter, nparams)
-	ret = C.virNodeGetMemoryParameters(c.ptr, (*C.virTypedParameter)(unsafe.Pointer(&cparams[0])), &nparams, 0)
-	if ret == -1 {
-		return GetLastError()
-	}
-
-	defer C.virTypedParamsClear((*C.virTypedParameter)(unsafe.Pointer(&cparams[0])), nparams)
-
-	err := typedParamsPack(cparams, info)
-	if err != nil {
-		return err
-	}
-
-	ret = C.virNodeSetMemoryParameters(c.ptr, (*C.virTypedParameter)(unsafe.Pointer(&cparams[0])), nparams, C.uint(flags))
 
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeSuspendForDuration
 func (c *Connect) SuspendForDuration(target NodeSuspendTarget, duration uint64, flags uint32) error {
-	ret := C.virNodeSuspendForDuration(c.ptr, C.uint(target), C.ulonglong(duration), C.uint(flags))
+	var err C.virError
+	ret := C.virNodeSuspendForDurationWrapper(c.ptr, C.uint(target), C.ulonglong(duration), C.uint(flags), &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
@@ -1888,24 +2121,26 @@ func (c *Connect) DomainSaveImageDefineXML(file string, xml string, flags Domain
 	cxml := C.CString(xml)
 	defer C.free(unsafe.Pointer(cxml))
 
-	ret := C.virDomainSaveImageDefineXML(c.ptr, cfile, cxml, C.uint(flags))
+	var err C.virError
+	ret := C.virDomainSaveImageDefineXMLWrapper(c.ptr, cfile, cxml, C.uint(flags), &err)
 
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virDomainSaveImageGetXMLDesc
-func (c *Connect) DomainSaveImageGetXMLDesc(file string, flags DomainXMLFlags) (string, error) {
+func (c *Connect) DomainSaveImageGetXMLDesc(file string, flags DomainSaveImageXMLFlags) (string, error) {
 	cfile := C.CString(file)
 	defer C.free(unsafe.Pointer(cfile))
 
-	ret := C.virDomainSaveImageGetXMLDesc(c.ptr, cfile, C.uint(flags))
+	var err C.virError
+	ret := C.virDomainSaveImageGetXMLDescWrapper(c.ptr, cfile, C.uint(flags), &err)
 
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -1921,9 +2156,51 @@ func (c *Connect) BaselineCPU(xmlCPUs []string, flags ConnectBaselineCPUFlags) (
 		defer C.free(unsafe.Pointer(cxmlCPUs[i]))
 	}
 
-	ret := C.virConnectBaselineCPU(c.ptr, &cxmlCPUs[0], C.uint(len(xmlCPUs)), C.uint(flags))
+	var err C.virError
+	ret := C.virConnectBaselineCPUWrapper(c.ptr, &cxmlCPUs[0], C.uint(len(xmlCPUs)), C.uint(flags), &err)
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
+	}
+
+	defer C.free(unsafe.Pointer(ret))
+
+	return C.GoString(ret), nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectBaselineHypervisorCPU
+func (c *Connect) BaselineHypervisorCPU(emulator string, arch string, machine string, virttype string, xmlCPUs []string, flags ConnectBaselineCPUFlags) (string, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4004000 {
+		return "", makeNotImplementedError("virConnectBaselineHypervisorCPU")
+	}
+
+	var cemulator, carch, cmachine, cvirttype *C.char
+	if emulator != "" {
+		cemulator = C.CString(emulator)
+		defer C.free(unsafe.Pointer(cemulator))
+	}
+	if arch != "" {
+		carch = C.CString(arch)
+		defer C.free(unsafe.Pointer(carch))
+	}
+	if machine != "" {
+		cmachine = C.CString(machine)
+		defer C.free(unsafe.Pointer(cmachine))
+	}
+	if virttype != "" {
+		cvirttype = C.CString(virttype)
+		defer C.free(unsafe.Pointer(cvirttype))
+	}
+	cxmlCPUs := make([]*C.char, len(xmlCPUs))
+	for i := 0; i < len(xmlCPUs); i++ {
+		cxmlCPUs[i] = C.CString(xmlCPUs[i])
+		defer C.free(unsafe.Pointer(cxmlCPUs[i]))
+	}
+
+	var err C.virError
+	ret := C.virConnectBaselineHypervisorCPUWrapper(c.ptr, cemulator, carch, cmachine, cvirttype,
+		&cxmlCPUs[0], C.uint(len(xmlCPUs)), C.uint(flags), &err)
+	if ret == nil {
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -1936,9 +2213,46 @@ func (c *Connect) CompareCPU(xmlDesc string, flags ConnectCompareCPUFlags) (CPUC
 	cxmlDesc := C.CString(xmlDesc)
 	defer C.free(unsafe.Pointer(cxmlDesc))
 
-	ret := C.virConnectCompareCPU(c.ptr, cxmlDesc, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectCompareCPUWrapper(c.ptr, cxmlDesc, C.uint(flags), &err)
 	if ret == C.VIR_CPU_COMPARE_ERROR {
-		return CPU_COMPARE_ERROR, GetLastError()
+		return CPU_COMPARE_ERROR, makeError(&err)
+	}
+
+	return CPUCompareResult(ret), nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectCompareHypervisorCPU
+func (c *Connect) CompareHypervisorCPU(emulator string, arch string, machine string, virttype string, xmlDesc string, flags ConnectCompareCPUFlags) (CPUCompareResult, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4004000 {
+		return CPU_COMPARE_ERROR, makeNotImplementedError("virConnectCompareHypervisorCPU")
+	}
+
+	var cemulator, carch, cmachine, cvirttype *C.char
+	if emulator != "" {
+		cemulator = C.CString(emulator)
+		defer C.free(unsafe.Pointer(cemulator))
+	}
+	if arch != "" {
+		carch = C.CString(arch)
+		defer C.free(unsafe.Pointer(carch))
+	}
+	if machine != "" {
+		cmachine = C.CString(machine)
+		defer C.free(unsafe.Pointer(cmachine))
+	}
+	if virttype != "" {
+		cvirttype = C.CString(virttype)
+		defer C.free(unsafe.Pointer(cvirttype))
+	}
+
+	cxmlDesc := C.CString(xmlDesc)
+	defer C.free(unsafe.Pointer(cxmlDesc))
+
+	var err C.virError
+	ret := C.virConnectCompareHypervisorCPUWrapper(c.ptr, cemulator, carch, cmachine, cvirttype, cxmlDesc, C.uint(flags), &err)
+	if ret == C.VIR_CPU_COMPARE_ERROR {
+		return CPU_COMPARE_ERROR, makeError(&err)
 	}
 
 	return CPUCompareResult(ret), nil
@@ -1951,9 +2265,10 @@ func (c *Connect) DomainXMLFromNative(nativeFormat string, nativeConfig string, 
 	cnativeConfig := C.CString(nativeConfig)
 	defer C.free(unsafe.Pointer(cnativeConfig))
 
-	ret := C.virConnectDomainXMLFromNative(c.ptr, cnativeFormat, cnativeConfig, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectDomainXMLFromNativeWrapper(c.ptr, cnativeFormat, cnativeConfig, C.uint(flags), &err)
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -1968,9 +2283,10 @@ func (c *Connect) DomainXMLToNative(nativeFormat string, domainXml string, flags
 	cdomainXml := C.CString(domainXml)
 	defer C.free(unsafe.Pointer(cdomainXml))
 
-	ret := C.virConnectDomainXMLToNative(c.ptr, cnativeFormat, cdomainXml, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectDomainXMLToNativeWrapper(c.ptr, cnativeFormat, cdomainXml, C.uint(flags), &err)
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -1984,9 +2300,10 @@ func (c *Connect) GetCPUModelNames(arch string, flags uint32) ([]string, error) 
 	defer C.free(unsafe.Pointer(carch))
 
 	var cmodels **C.char
-	ret := C.virConnectGetCPUModelNames(c.ptr, carch, &cmodels, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectGetCPUModelNamesWrapper(c.ptr, carch, &cmodels, C.uint(flags), &err)
 	if ret == -1 {
-		return []string{}, GetLastError()
+		return []string{}, makeError(&err)
 	}
 
 	models := make([]string, int(ret))
@@ -2004,7 +2321,7 @@ func (c *Connect) GetCPUModelNames(arch string, flags uint32) ([]string, error) 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virConnectGetDomainCapabilities
 func (c *Connect) GetDomainCapabilities(emulatorbin string, arch string, machine string, virttype string, flags uint32) (string, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002007 {
-		return "", GetNotImplementedError("virConnectGetDomainCapabilities")
+		return "", makeNotImplementedError("virConnectGetDomainCapabilities")
 	}
 	var cemulatorbin *C.char
 	if emulatorbin != "" {
@@ -2027,9 +2344,10 @@ func (c *Connect) GetDomainCapabilities(emulatorbin string, arch string, machine
 		defer C.free(unsafe.Pointer(cvirttype))
 	}
 
-	ret := C.virConnectGetDomainCapabilitiesCompat(c.ptr, cemulatorbin, carch, cmachine, cvirttype, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectGetDomainCapabilitiesWrapper(c.ptr, cemulatorbin, carch, cmachine, cvirttype, C.uint(flags), &err)
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -2040,9 +2358,10 @@ func (c *Connect) GetDomainCapabilities(emulatorbin string, arch string, machine
 // See also https://libvirt.org/html/libvirt-libvirt-host.html#virConnectGetVersion
 func (c *Connect) GetVersion() (uint32, error) {
 	var hvVer C.ulong
-	ret := C.virConnectGetVersion(c.ptr, &hvVer)
+	var err C.virError
+	ret := C.virConnectGetVersionWrapper(c.ptr, &hvVer, &err)
 	if ret == -1 {
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 
 	return uint32(hvVer), nil
@@ -2057,9 +2376,10 @@ func (c *Connect) FindStoragePoolSources(pooltype string, srcSpec string, flags 
 		csrcSpec := C.CString(srcSpec)
 		defer C.free(unsafe.Pointer(csrcSpec))
 	}
-	ret := C.virConnectFindStoragePoolSources(c.ptr, cpooltype, csrcSpec, C.uint(flags))
+	var err C.virError
+	ret := C.virConnectFindStoragePoolSourcesWrapper(c.ptr, cpooltype, csrcSpec, C.uint(flags), &err)
 	if ret == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	defer C.free(unsafe.Pointer(ret))
@@ -2071,8 +2391,9 @@ func (c *Connect) FindStoragePoolSources(pooltype string, srcSpec string, flags 
 func (c *Connect) DomainRestore(srcFile string) error {
 	cPath := C.CString(srcFile)
 	defer C.free(unsafe.Pointer(cPath))
-	if result := C.virDomainRestore(c.ptr, cPath); result == -1 {
-		return GetLastError()
+	var err C.virError
+	if result := C.virDomainRestoreWrapper(c.ptr, cPath, &err); result == -1 {
+		return makeError(&err)
 	}
 	return nil
 }
@@ -2086,17 +2407,19 @@ func (c *Connect) DomainRestoreFlags(srcFile, xmlConf string, flags DomainSaveRe
 		cXmlConf = C.CString(xmlConf)
 		defer C.free(unsafe.Pointer(cXmlConf))
 	}
-	if result := C.virDomainRestoreFlags(c.ptr, cPath, cXmlConf, C.uint(flags)); result == -1 {
-		return GetLastError()
+	var err C.virError
+	if result := C.virDomainRestoreFlagsWrapper(c.ptr, cPath, cXmlConf, C.uint(flags), &err); result == -1 {
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-stream.html#virStreamNew
 func (c *Connect) NewStream(flags StreamFlags) (*Stream, error) {
-	virStream := C.virStreamNew(c.ptr, C.uint(flags))
+	var err C.virError
+	virStream := C.virStreamNewWrapper(c.ptr, C.uint(flags), &err)
 	if virStream == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 
 	return &Stream{
@@ -2151,10 +2474,34 @@ func getDomainStatsCPUFieldInfo(params *DomainStatsCPU) map[string]typedParamsFi
 }
 
 type DomainStatsBalloon struct {
-	CurrentSet bool
-	Current    uint64
-	MaximumSet bool
-	Maximum    uint64
+	CurrentSet        bool
+	Current           uint64
+	MaximumSet        bool
+	Maximum           uint64
+	SwapInSet         bool
+	SwapIn            uint64
+	SwapOutSet        bool
+	SwapOut           uint64
+	MajorFaultSet     bool
+	MajorFault        uint64
+	MinorFaultSet     bool
+	MinorFault        uint64
+	UnusedSet         bool
+	Unused            uint64
+	AvailableSet      bool
+	Available         uint64
+	RssSet            bool
+	Rss               uint64
+	UsableSet         bool
+	Usable            uint64
+	LastUpdateSet     bool
+	LastUpdate        uint64
+	DiskCachesSet     bool
+	DiskCaches        uint64
+	HugetlbPgAllocSet bool
+	HugetlbPgAlloc    uint64
+	HugetlbPgFailSet  bool
+	HugetlbPgFail     uint64
 }
 
 func getDomainStatsBalloonFieldInfo(params *DomainStatsBalloon) map[string]typedParamsFieldInfo {
@@ -2167,6 +2514,55 @@ func getDomainStatsBalloonFieldInfo(params *DomainStatsBalloon) map[string]typed
 			set: &params.MaximumSet,
 			ul:  &params.Maximum,
 		},
+		"balloon.swap_in": typedParamsFieldInfo{
+			set: &params.SwapInSet,
+			ul:  &params.SwapIn,
+		},
+		"balloon.swap_out": typedParamsFieldInfo{
+			set: &params.SwapOutSet,
+			ul:  &params.SwapOut,
+		},
+		"balloon.major_fault": typedParamsFieldInfo{
+			set: &params.MajorFaultSet,
+			ul:  &params.MajorFault,
+		},
+		"balloon.minor_fault": typedParamsFieldInfo{
+			set: &params.MinorFaultSet,
+			ul:  &params.MinorFault,
+		},
+		"balloon.unused": typedParamsFieldInfo{
+			set: &params.UnusedSet,
+			ul:  &params.Unused,
+		},
+		"balloon.available": typedParamsFieldInfo{
+			set: &params.AvailableSet,
+			ul:  &params.Available,
+		},
+		"balloon.rss": typedParamsFieldInfo{
+			set: &params.RssSet,
+			ul:  &params.Rss,
+		},
+		"balloon.usable": typedParamsFieldInfo{
+			set: &params.UsableSet,
+			ul:  &params.Usable,
+		},
+		// note: last-update not last_update, verified in libvirt source
+		"balloon.last-update": typedParamsFieldInfo{
+			set: &params.LastUpdateSet,
+			ul:  &params.LastUpdate,
+		},
+		"balloon.disk_caches": typedParamsFieldInfo{
+			set: &params.DiskCachesSet,
+			ul:  &params.DiskCaches,
+		},
+		"balloon.hugetlb_pgalloc": typedParamsFieldInfo{
+			set: &params.HugetlbPgAllocSet,
+			ul:  &params.HugetlbPgAlloc,
+		},
+		"balloon.hugetlb_pgfail": typedParamsFieldInfo{
+			set: &params.HugetlbPgFailSet,
+			ul:  &params.HugetlbPgFail,
+		},
 	}
 }
 
@@ -2175,6 +2571,8 @@ type DomainStatsVcpu struct {
 	State    VcpuState
 	TimeSet  bool
 	Time     uint64
+	WaitSet  bool
+	Wait     uint64
 }
 
 func getDomainStatsVcpuFieldInfo(idx int, params *DomainStatsVcpu) map[string]typedParamsFieldInfo {
@@ -2186,6 +2584,10 @@ func getDomainStatsVcpuFieldInfo(idx int, params *DomainStatsVcpu) map[string]ty
 		fmt.Sprintf("vcpu.%d.time", idx): typedParamsFieldInfo{
 			set: &params.TimeSet,
 			ul:  &params.Time,
+		},
+		fmt.Sprintf("vcpu.%d.wait", idx): typedParamsFieldInfo{
+			set: &params.WaitSet,
+			ul:  &params.Wait,
 		},
 	}
 }
@@ -2490,6 +2892,71 @@ func getDomainStatsPerfFieldInfo(params *DomainStatsPerf) map[string]typedParams
 	}
 }
 
+type DomainStatsMemory struct {
+	BandwidthMonitor []DomainStatsMemoryBandwidthMonitor
+}
+
+type DomainStatsMemoryBandwidthMonitor struct {
+	NameSet  bool
+	Name     string
+	VCPUsSet bool
+	VCPUs    string
+	Nodes    []DomainStatsMemoryBandwidthMonitorNode
+}
+
+func getDomainStatsMemoryBandwidthMonitorFieldInfo(idx int, params *DomainStatsMemoryBandwidthMonitor) map[string]typedParamsFieldInfo {
+	return map[string]typedParamsFieldInfo{
+		fmt.Sprintf("memory.bandwidth.monitor.%d.name", idx): typedParamsFieldInfo{
+			set: &params.NameSet,
+			s:   &params.Name,
+		},
+		fmt.Sprintf("memory.bandwidth.monitor.%d.vcpus", idx): typedParamsFieldInfo{
+			set: &params.VCPUsSet,
+			s:   &params.VCPUs,
+		},
+	}
+}
+
+type domainStatsMemoryBandwidthMonitorLengths struct {
+	NodeCountSet bool
+	NodeCount    uint
+}
+
+func getDomainStatsMemoryBandwidthMonitorLengthsFieldInfo(idx int, params *domainStatsMemoryBandwidthMonitorLengths) map[string]typedParamsFieldInfo {
+	return map[string]typedParamsFieldInfo{
+		fmt.Sprintf("memory.bandwidth.monitor.%d.node.count", idx): typedParamsFieldInfo{
+			set: &params.NodeCountSet,
+			ui:  &params.NodeCount,
+		},
+	}
+}
+
+type DomainStatsMemoryBandwidthMonitorNode struct {
+	IDSet         bool
+	ID            uint
+	BytesLocalSet bool
+	BytesLocal    uint64
+	BytesTotalSet bool
+	BytesTotal    uint64
+}
+
+func getDomainStatsMemoryBandwidthMonitorNodeFieldInfo(idx1, idx2 int, params *DomainStatsMemoryBandwidthMonitorNode) map[string]typedParamsFieldInfo {
+	return map[string]typedParamsFieldInfo{
+		fmt.Sprintf("memory.bandwidth.monitor.%d.node.%d.id", idx1, idx2): typedParamsFieldInfo{
+			set: &params.IDSet,
+			ui:  &params.ID,
+		},
+		fmt.Sprintf("memory.bandwidth.monitor.%d.node.%d.bytes.local", idx1, idx2): typedParamsFieldInfo{
+			set: &params.BytesLocalSet,
+			ul:  &params.BytesLocal,
+		},
+		fmt.Sprintf("memory.bandwidth.monitor.%d.node.%d.bytes.total", idx1, idx2): typedParamsFieldInfo{
+			set: &params.BytesTotalSet,
+			ul:  &params.BytesTotal,
+		},
+	}
+}
+
 type DomainStats struct {
 	Domain  *Domain
 	State   *DomainStatsState
@@ -2499,17 +2966,20 @@ type DomainStats struct {
 	Net     []DomainStatsNet
 	Block   []DomainStatsBlock
 	Perf    *DomainStatsPerf
+	Memory  *DomainStatsMemory
 }
 
 type domainStatsLengths struct {
-	VcpuCurrentSet bool
-	VcpuCurrent    uint
-	VcpuMaximumSet bool
-	VcpuMaximum    uint
-	NetCountSet    bool
-	NetCount       uint
-	BlockCountSet  bool
-	BlockCount     uint
+	VcpuCurrentSet    bool
+	VcpuCurrent       uint
+	VcpuMaximumSet    bool
+	VcpuMaximum       uint
+	NetCountSet       bool
+	NetCount          uint
+	BlockCountSet     bool
+	BlockCount        uint
+	BandwidthCountSet bool
+	BandwidthCount    uint
 }
 
 func getDomainStatsLengthsFieldInfo(params *domainStatsLengths) map[string]typedParamsFieldInfo {
@@ -2530,31 +3000,36 @@ func getDomainStatsLengthsFieldInfo(params *domainStatsLengths) map[string]typed
 			set: &params.BlockCountSet,
 			ui:  &params.BlockCount,
 		},
+		"memory.bandwidth.monitor.count": typedParamsFieldInfo{
+			set: &params.BandwidthCountSet,
+			ui:  &params.BandwidthCount,
+		},
 	}
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-domain.html#virConnectGetAllDomainStats
 func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes, flags ConnectGetAllDomainStatsFlags) ([]DomainStats, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002008 {
-		return []DomainStats{}, GetNotImplementedError("virConnectGetAllDomainStats")
+		return []DomainStats{}, makeNotImplementedError("virConnectGetAllDomainStats")
 	}
 	var ret C.int
 	var cstats *C.virDomainStatsRecordPtr
+	var err C.virError
 	if len(doms) > 0 {
 		cdoms := make([]C.virDomainPtr, len(doms)+1)
 		for i := 0; i < len(doms); i++ {
 			cdoms[i] = doms[i].ptr
 		}
 
-		ret = C.virDomainListGetStatsCompat(&cdoms[0], C.uint(statsTypes), &cstats, C.uint(flags))
+		ret = C.virDomainListGetStatsWrapper(&cdoms[0], C.uint(statsTypes), &cstats, C.uint(flags), &err)
 	} else {
-		ret = C.virConnectGetAllDomainStatsCompat(c.ptr, C.uint(statsTypes), &cstats, C.uint(flags))
+		ret = C.virConnectGetAllDomainStatsWrapper(c.ptr, C.uint(statsTypes), &cstats, C.uint(flags), &err)
 	}
 	if ret == -1 {
-		return []DomainStats{}, GetLastError()
+		return []DomainStats{}, makeError(&err)
 	}
 
-	defer C.virDomainStatsRecordListFreeCompat(cstats)
+	defer C.virDomainStatsRecordListFreeWrapper(cstats)
 
 	stats := make([]DomainStats, ret)
 	for i := 0; i < int(ret); i++ {
@@ -2567,9 +3042,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 		state := &DomainStatsState{}
 		stateInfo := getDomainStatsStateFieldInfo(state)
 
-		count, err := typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), stateInfo)
-		if err != nil {
-			return []DomainStats{}, err
+		count, gerr := typedParamsUnpack(cdomstats.params, cdomstats.nparams, stateInfo)
+		if gerr != nil {
+			return []DomainStats{}, gerr
 		}
 		if count != 0 {
 			domstats.State = state
@@ -2578,9 +3053,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 		cpu := &DomainStatsCPU{}
 		cpuInfo := getDomainStatsCPUFieldInfo(cpu)
 
-		count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), cpuInfo)
-		if err != nil {
-			return []DomainStats{}, err
+		count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, cpuInfo)
+		if gerr != nil {
+			return []DomainStats{}, gerr
 		}
 		if count != 0 {
 			domstats.Cpu = cpu
@@ -2589,9 +3064,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 		balloon := &DomainStatsBalloon{}
 		balloonInfo := getDomainStatsBalloonFieldInfo(balloon)
 
-		count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), balloonInfo)
-		if err != nil {
-			return []DomainStats{}, err
+		count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, balloonInfo)
+		if gerr != nil {
+			return []DomainStats{}, gerr
 		}
 		if count != 0 {
 			domstats.Balloon = balloon
@@ -2600,9 +3075,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 		perf := &DomainStatsPerf{}
 		perfInfo := getDomainStatsPerfFieldInfo(perf)
 
-		count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), perfInfo)
-		if err != nil {
-			return []DomainStats{}, err
+		count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, perfInfo)
+		if gerr != nil {
+			return []DomainStats{}, gerr
 		}
 		if count != 0 {
 			domstats.Perf = perf
@@ -2611,9 +3086,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 		lengths := domainStatsLengths{}
 		lengthsInfo := getDomainStatsLengthsFieldInfo(&lengths)
 
-		count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), lengthsInfo)
-		if err != nil {
-			return []DomainStats{}, err
+		count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, lengthsInfo)
+		if gerr != nil {
+			return []DomainStats{}, gerr
 		}
 
 		if !lengths.VcpuMaximumSet && lengths.VcpuCurrentSet {
@@ -2627,9 +3102,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 				vcpu := DomainStatsVcpu{}
 				vcpuInfo := getDomainStatsVcpuFieldInfo(j, &vcpu)
 
-				count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), vcpuInfo)
-				if err != nil {
-					return []DomainStats{}, err
+				count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, vcpuInfo)
+				if gerr != nil {
+					return []DomainStats{}, gerr
 				}
 				if count == 0 {
 					vcpu.StateSet = true
@@ -2645,9 +3120,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 				block := DomainStatsBlock{}
 				blockInfo := getDomainStatsBlockFieldInfo(j, &block)
 
-				count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), blockInfo)
-				if err != nil {
-					return []DomainStats{}, err
+				count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, blockInfo)
+				if gerr != nil {
+					return []DomainStats{}, gerr
 				}
 				if count != 0 {
 					domstats.Block[j] = block
@@ -2661,9 +3136,9 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 				net := DomainStatsNet{}
 				netInfo := getDomainStatsNetFieldInfo(j, &net)
 
-				count, err = typedParamsUnpackLen(cdomstats.params, int(cdomstats.nparams), netInfo)
-				if err != nil {
-					return []DomainStats{}, err
+				count, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, netInfo)
+				if gerr != nil {
+					return []DomainStats{}, gerr
 				}
 				if count != 0 {
 					domstats.Net[j] = net
@@ -2671,8 +3146,148 @@ func (c *Connect) GetAllDomainStats(doms []*Domain, statsTypes DomainStatsTypes,
 			}
 		}
 
+		if lengths.BandwidthCountSet && lengths.BandwidthCount > 0 {
+			domstats.Memory = &DomainStatsMemory{
+				BandwidthMonitor: make([]DomainStatsMemoryBandwidthMonitor, lengths.BandwidthCount),
+			}
+
+			for j := 0; j < int(lengths.BandwidthCount); j++ {
+				bwmon := DomainStatsMemoryBandwidthMonitor{}
+
+				bwmonInfo := getDomainStatsMemoryBandwidthMonitorFieldInfo(j, &bwmon)
+
+				_, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, bwmonInfo)
+				if gerr != nil {
+					return []DomainStats{}, gerr
+				}
+
+				bwmonlen := domainStatsMemoryBandwidthMonitorLengths{}
+
+				bwmonlenInfo := getDomainStatsMemoryBandwidthMonitorLengthsFieldInfo(j, &bwmonlen)
+
+				_, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, bwmonlenInfo)
+				if gerr != nil {
+					return []DomainStats{}, gerr
+				}
+
+				if bwmonlen.NodeCountSet && bwmonlen.NodeCount > 0 {
+					bwmon.Nodes = make([]DomainStatsMemoryBandwidthMonitorNode, bwmonlen.NodeCount)
+					for k := 0; k < int(bwmonlen.NodeCount); k++ {
+						bwmonnode := DomainStatsMemoryBandwidthMonitorNode{}
+
+						bwmonnodeInfo := getDomainStatsMemoryBandwidthMonitorNodeFieldInfo(j, k, &bwmonnode)
+
+						_, gerr = typedParamsUnpack(cdomstats.params, cdomstats.nparams, bwmonnodeInfo)
+						if gerr != nil {
+							return []DomainStats{}, gerr
+						}
+
+						bwmon.Nodes[k] = bwmonnode
+					}
+				}
+
+				domstats.Memory.BandwidthMonitor[j] = bwmon
+			}
+		}
+
 		stats[i] = domstats
 	}
 
+	for i := 0; i < len(stats); i++ {
+		C.virDomainRef(stats[i].Domain.ptr)
+	}
+
 	return stats, nil
+}
+
+type NodeSEVParameters struct {
+	PDHSet             bool
+	PDH                string
+	CertChainSet       bool
+	CertChain          string
+	CBitPosSet         bool
+	CBitPos            uint
+	ReducedPhysBitsSet bool
+	ReducedPhysBits    uint
+}
+
+func getNodeSEVFieldInfo(params *NodeSEVParameters) map[string]typedParamsFieldInfo {
+	return map[string]typedParamsFieldInfo{
+		C.VIR_NODE_SEV_PDH: typedParamsFieldInfo{
+			set: &params.PDHSet,
+			s:   &params.PDH,
+		},
+		C.VIR_NODE_SEV_CERT_CHAIN: typedParamsFieldInfo{
+			set: &params.CertChainSet,
+			s:   &params.CertChain,
+		},
+		C.VIR_NODE_SEV_CBITPOS: typedParamsFieldInfo{
+			set: &params.CBitPosSet,
+			ui:  &params.CBitPos,
+		},
+		C.VIR_NODE_SEV_REDUCED_PHYS_BITS: typedParamsFieldInfo{
+			set: &params.ReducedPhysBitsSet,
+			ui:  &params.ReducedPhysBits,
+		},
+	}
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-host.html#virNodeGetSEVInfo
+func (c *Connect) GetSEVInfo(flags uint32) (*NodeSEVParameters, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4005000 {
+		return nil, makeNotImplementedError("virNodeGetSEVInfo")
+	}
+
+	params := &NodeSEVParameters{}
+	info := getNodeSEVFieldInfo(params)
+
+	var cparams *C.virTypedParameter
+	var cnparams C.int
+
+	var err C.virError
+	ret := C.virNodeGetSEVInfoWrapper(c.ptr, (*C.virTypedParameterPtr)(unsafe.Pointer(&cparams)), &cnparams, C.uint(flags), &err)
+	if ret == -1 {
+		return nil, makeError(&err)
+	}
+
+	defer C.virTypedParamsFree(cparams, cnparams)
+
+	_, gerr := typedParamsUnpack(cparams, cnparams, info)
+	if gerr != nil {
+		return nil, gerr
+	}
+
+	return params, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-nwfilter.html#virNWFilterBindingCreateXML
+func (c *Connect) NWFilterBindingCreateXML(xmlConfig string, flags uint32) (*NWFilterBinding, error) {
+	if C.LIBVIR_VERSION_NUMBER < 4005000 {
+		return nil, makeNotImplementedError("virNWFilterBindingCreateXML")
+	}
+	cXml := C.CString(string(xmlConfig))
+	defer C.free(unsafe.Pointer(cXml))
+	var err C.virError
+	ptr := C.virNWFilterBindingCreateXMLWrapper(c.ptr, cXml, C.uint(flags), &err)
+	if ptr == nil {
+		return nil, makeError(&err)
+	}
+	return &NWFilterBinding{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-storage.html#virConnectGetStoragePoolCapabilities
+func (c *Connect) GetStoragePoolCapabilities(flags uint32) (string, error) {
+	if C.LIBVIR_VERSION_NUMBER < 5002000 {
+		return "", makeNotImplementedError("virConnectGetStoragePoolCapabilities")
+	}
+
+	var err C.virError
+	ret := C.virConnectGetStoragePoolCapabilitiesWrapper(c.ptr, C.uint(flags), &err)
+	if ret == nil {
+		return "", makeError(&err)
+	}
+
+	defer C.free(unsafe.Pointer(ret))
+
+	return C.GoString(ret), nil
 }

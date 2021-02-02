@@ -47,24 +47,6 @@
 #define VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE 1 << 0
 #endif
 
-int virNodeGetFreePagesCompat(virConnectPtr conn,
-			      unsigned int npages,
-			      unsigned int *pages,
-			      int startcell,
-			      unsigned int cellcount,
-			      unsigned long long *counts,
-			      unsigned int flags);
-
-
-/* 1.2.7 */
-
-char * virConnectGetDomainCapabilitiesCompat(virConnectPtr conn,
-					     const char *emulatorbin,
-					     const char *arch,
-					     const char *machine,
-					     const char *virttype,
-					     unsigned int flags);
-
 
 /* 1.2.8 */
 
@@ -118,18 +100,6 @@ struct _virDomainStatsRecord {
 };
 #endif
 
-int virConnectGetAllDomainStatsCompat(virConnectPtr conn,
-				      unsigned int stats,
-				      virDomainStatsRecordPtr **retStats,
-				      unsigned int flags);
-
-int virDomainListGetStatsCompat(virDomainPtr *doms,
-				unsigned int stats,
-				virDomainStatsRecordPtr **retStats,
-				unsigned int flags);
-
-void virDomainStatsRecordListFreeCompat(virDomainStatsRecordPtr *stats);
-
 
 /* 1.2.9 */
 #ifndef VIR_NODE_ALLOC_PAGES_ADD
@@ -139,14 +109,6 @@ void virDomainStatsRecordListFreeCompat(virDomainStatsRecordPtr *stats);
 #ifndef VIR_NODE_ALLOC_PAGES_SET
 #define VIR_NODE_ALLOC_PAGES_SET 1 << 0
 #endif
-
-int virNodeAllocPagesCompat(virConnectPtr conn,
-			    unsigned int npages,
-			    unsigned int *pageSizes,
-			    unsigned long long *pageCounts,
-			    int startCell,
-			    unsigned int cellCount,
-			    unsigned int flags);
 
 
 /* 1.2.11 */
@@ -178,10 +140,6 @@ int virNodeAllocPagesCompat(virConnectPtr conn,
 #define VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING 1 << 30
 #endif
 
-virDomainPtr virDomainDefineXMLFlagsCompat(virConnectPtr conn,
-					   const char *xml,
-					   unsigned int flags);
-
 /* 1.2.14 */
 
 #ifndef VIR_CONNECT_BASELINE_CPU_MIGRATABLE
@@ -211,5 +169,118 @@ virDomainPtr virDomainDefineXMLFlagsCompat(virConnectPtr conn,
 #ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV
 #define VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV 1 << 15
 #endif
+
+
+/* 4.5.0 */
+
+#ifndef VIR_NODE_SEV_CBITPOS
+#define VIR_NODE_SEV_CBITPOS "cbitpos"
+#endif
+
+#ifndef VIR_NODE_SEV_REDUCED_PHYS_BITS
+#define VIR_NODE_SEV_REDUCED_PHYS_BITS "reduced-phys-bits"
+#endif
+
+#ifndef VIR_NODE_SEV_PDH
+#define VIR_NODE_SEV_PDH "pdh"
+#endif
+
+#ifndef VIR_NODE_SEV_CERT_CHAIN
+#define VIR_NODE_SEV_CERT_CHAIN "cert-chain"
+#endif
+
+#if LIBVIR_VERSION_NUMBER < 4005000
+typedef struct _virNWFilterBinding *virNWFilterBindingPtr;
+#endif
+
+#ifndef VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT
+#define VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT 1 << 29
+#endif
+
+/* 5.6.0 */
+
+#ifndef VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT
+#define VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT 1 << 19
+#endif
+
+#ifndef VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT
+# define VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT (1 << 14)
+#endif
+
+#ifndef VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT
+# define VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT (1 << 15)
+#endif
+
+
+/* 5.8.0 */
+
+#ifndef VIR_CONNECT_IDENTITY_USER_NAME
+#define VIR_CONNECT_IDENTITY_USER_NAME "user-name"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_UNIX_USER_ID
+#define VIR_CONNECT_IDENTITY_UNIX_USER_ID "unix-user-id"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_GROUP_NAME
+#define VIR_CONNECT_IDENTITY_GROUP_NAME "group-name"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_UNIX_GROUP_ID
+#define VIR_CONNECT_IDENTITY_UNIX_GROUP_ID "unix-group-id"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_PROCESS_ID
+#define VIR_CONNECT_IDENTITY_PROCESS_ID "process-id"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_PROCESS_TIME
+#define VIR_CONNECT_IDENTITY_PROCESS_TIME "process-time"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_SASL_USER_NAME
+#define VIR_CONNECT_IDENTITY_SASL_USER_NAME "sasl-user-name"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME
+#define VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME "x509-distinguished-name"
+#endif
+
+#ifndef VIR_CONNECT_IDENTITY_SELINUX_CONTEXT
+#define VIR_CONNECT_IDENTITY_SELINUX_CONTEXT "selinux-context"
+#endif
+
+
+/* 6.8.0 */
+
+#ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV
+#define VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV 1 << 16
+#endif
+
+/* 6.9.0 */
+
+#ifndef VIR_CONNECT_COMPARE_CPU_VALIDATE_XML
+#define VIR_CONNECT_COMPARE_CPU_VALIDATE_XML 1 << 1
+#endif
+
+#ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA
+#define VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA 1 << 17
+#endif
+
+/* 7.0.0 */
+
+#ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD
+#define VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD 1 << 18
+#endif
+
+#ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE
+#define VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE 1 << 19
+#endif
+
+#ifndef VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX
+#define VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX 1 << 20
+#endif
+
+
 
 #endif /* LIBVIRT_GO_CONNECT_COMPAT_H__ */
