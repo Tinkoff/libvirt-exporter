@@ -484,14 +484,16 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 				break
 			}
 		}
-		ch <- prometheus.MustNewConstMetric(
-			libvirtDomainMetaInterfacesDesc,
-			prometheus.GaugeValue,
-			float64(1),
-			domainName,
-			SourceBridge,
-			iface.Name,
-			VirtualInterface)
+		if SourceBridge != "" || VirtualInterface != "" {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainMetaInterfacesDesc,
+				prometheus.GaugeValue,
+				float64(1),
+				domainName,
+				SourceBridge,
+				iface.Name,
+				VirtualInterface)
+		}
 		if iface.RxBytesSet {
 			ch <- prometheus.MustNewConstMetric(
 				libvirtDomainInterfaceRxBytesDesc,
