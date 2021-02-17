@@ -1,0 +1,28 @@
+diff --git a/src/storage/storage_backend_fs.c b/src/storage/storage_backend_fs.c
+index ed677058ed..fafe2745cc 100644
+--- a/src/storage/storage_backend_fs.c
++++ b/src/storage/storage_backend_fs.c
+@@ -42,6 +42,9 @@ VIR_LOG_INIT("storage.storage_backend_fs");
+ #if WITH_STORAGE_FS
+ 
+ # include <mntent.h>
++#ifndef _PATH_MOUNTED
++# include <paths.h>
++#endif
+ 
+ struct _virNetfsDiscoverState {
+     const char *host;
+diff --git a/src/storage/storage_backend_vstorage.c b/src/storage/storage_backend_vstorage.c
+index cec21dccbf..685f78a22f 100644
+--- a/src/storage/storage_backend_vstorage.c
++++ b/src/storage/storage_backend_vstorage.c
+@@ -7,6 +7,9 @@
+ #include "virlog.h"
+ #include "virstring.h"
+ #include <mntent.h>
++#ifndef _PATH_MOUNTED
++#include <paths.h>
++#endif
+ #include <pwd.h>
+ #include <grp.h>
+ #include "storage_util.h"
