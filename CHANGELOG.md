@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Fix docker image build. Add libvirt patch to include `path.h` if `_PATH_MOUNTED` is not defined.
 - Fix potential domain leak.
 - Add per-vcpu stats: cpu number, time running and state.
 - Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it.
