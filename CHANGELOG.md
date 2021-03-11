@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix potential domain leak.
 - Add per-vcpu stats: cpu number, time running and state.
 - Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it.
+- Fix attempts to scrape VCPU metrics when instance in shutdown state. [9](https://github.com/AlexZzz/libvirt-exporter/issues/9)
 
 ## [1.0.0] - 2020-03-16
 ### Changed
