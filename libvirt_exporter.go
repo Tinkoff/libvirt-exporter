@@ -316,31 +316,33 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 
 	domainStatsVcpu, err := stat.Domain.GetVcpus()
 	if err != nil {
-		return err
-	}
+		lverr, ok := err.(libvirt.Error)
+		if ! ok || lverr.Code != libvirt.ERR_OPERATION_INVALID {
+			return err
+		}
+	} else {
+		for _, vcpu := range domainStatsVcpu {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainVcpuStateDesc,
+				prometheus.GaugeValue,
+				float64(vcpu.State),
+				domainName,
+				strconv.FormatInt(int64(vcpu.Number), 10))
 
-	for _, vcpu := range domainStatsVcpu {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainVcpuTimeDesc,
+				prometheus.CounterValue,
+				float64(vcpu.CpuTime)/1000/1000/1000, // From nsec to sec
+				domainName,
+				strconv.FormatInt(int64(vcpu.Number), 10))
 
-		ch <- prometheus.MustNewConstMetric(
-			libvirtDomainVcpuStateDesc,
-			prometheus.GaugeValue,
-			float64(vcpu.State),
-			domainName,
-			strconv.FormatInt(int64(vcpu.Number), 10))
-
-		ch <- prometheus.MustNewConstMetric(
-			libvirtDomainVcpuTimeDesc,
-			prometheus.CounterValue,
-			float64(vcpu.CpuTime)/1000/1000/1000, // From nsec to sec
-			domainName,
-			strconv.FormatInt(int64(vcpu.Number), 10))
-
-		ch <- prometheus.MustNewConstMetric(
-			libvirtDomainVcpuCPUDesc,
-			prometheus.GaugeValue,
-			float64(vcpu.Cpu),
-			domainName,
-			strconv.FormatInt(int64(vcpu.Number), 10))
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainVcpuCPUDesc,
+				prometheus.GaugeValue,
+				float64(vcpu.Cpu),
+				domainName,
+				strconv.FormatInt(int64(vcpu.Number), 10))
+		}
 	}
 
 	// Report block device statistics.
