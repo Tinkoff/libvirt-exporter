@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Temprorarily fixed `build_static.sh`. [11](https://github.com/AlexZzz/libvirt-exporter/issues/11)
 - Fix docker image build. Add libvirt patch to include `path.h` if `_PATH_MOUNTED` is not defined.
 - Fix potential domain leak.
 - Add per-vcpu stats: cpu number, time running and state.
