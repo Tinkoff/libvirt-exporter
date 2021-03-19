@@ -30,7 +30,12 @@ sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
 # Build the libvirt-exporter.
 cd /libvirt-exporter
 export GOPATH=/gopath
-go get -d ./...
+mkdir -p /gopath/
+ln -s /libvirt-exporter/vendor /gopath/src
+mkdir -p /gopath/src/github.com/AlexZzz
+ln -s /libvirt-exporter /gopath/src/github.com/AlexZzz/libvirt-exporter
 go build --ldflags '-extldflags "-static"' -o libvirt-exporter
+unlink /gopath/src/github.com/AlexZzz/libvirt-exporter
+rmdir /gopath/src/github.com/AlexZzz
 strip libvirt-exporter
 EOF
