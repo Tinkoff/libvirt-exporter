@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Temprorarily fixed `build_static.sh`. [11](https://github.com/AlexZzz/libvirt-exporter/issues/11)
-- Fix docker image build. Add libvirt patch to include `path.h` if `_PATH_MOUNTED` is not defined.
+- Fix docker image build. Add libvirt patch to include `path.h` if `_PATH_MOUNTED` is not definedi. By [@stress-t](https://github.com/stress-t)
 - Fix potential domain leak.
 - Add per-vcpu stats: cpu number, time running and state.
-- Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it.
-- Fix attempts to scrape VCPU metrics when instance in shutdown state. [9](https://github.com/AlexZzz/libvirt-exporter/issues/9)
+- Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it. By [@bswinnerton](https://github.com/bswinnerton)
+- Fix attempts to scrape VCPU metrics when instance in shutdown state. [9](https://github.com/AlexZzz/libvirt-exporter/issues/9) by [@pmhahn](https://github.com/pmhahn)
 
 ## [1.0.0] - 2020-03-16
 ### Changed
