@@ -6,7 +6,7 @@ ENV libvirt_version 3.8.0
 
 # Install dependencies
 RUN set -ex
-RUN apk add --update git gcc g++ make libc-dev portablexdr-dev linux-headers libnl-dev perl libtirpc-dev pkgconfig wget python python-dev libxslt upx
+RUN apk add --update git gcc g++ make libc-dev portablexdr-dev linux-headers libnl-dev perl libtirpc-dev pkgconfig wget python2 python2-dev libxslt upx
 RUN wget ftp://xmlsoft.org/libxml2/libxml2-${libxml2_version}.tar.gz -P /tmp && \
     tar -xf /tmp/libxml2-${libxml2_version}.tar.gz -C /tmp
 WORKDIR /tmp/libxml2-${libxml2_version}
