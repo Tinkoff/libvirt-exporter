@@ -322,7 +322,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 	domainStatsVcpu, err := stat.Domain.GetVcpus()
 	if err != nil {
 		lverr, ok := err.(libvirt.Error)
-		if ! ok || lverr.Code != libvirt.ERR_OPERATION_INVALID {
+		if !ok || lverr.Code != libvirt.ERR_OPERATION_INVALID {
 			return err
 		}
 	} else {
@@ -348,21 +348,20 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 				domainName,
 				strconv.FormatInt(int64(vcpu.Number), 10))
 		}
-	}
-
-	/* There's no Wait in GetVcpus()
-	 * But there's no cpu number in libvirt.DomainStats
-	 * Time and State are present in both structs
-	 * So, let's take Wait here
-	 */
-	for cpuNum, vcpu := range stat.Vcpu {
-		if vcpu.WaitSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainVcpuWaitDesc,
-				prometheus.CounterValue,
-				float64(vcpu.Wait)/1000/1000/1000,
-				domainName,
-				strconv.FormatInt(int64(cpuNum), 10))
+		/* There's no Wait in GetVcpus()
+		 * But there's no cpu number in libvirt.DomainStats
+		 * Time and State are present in both structs
+		 * So, let's take Wait here
+		 */
+		for cpuNum, vcpu := range stat.Vcpu {
+			if vcpu.WaitSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainVcpuWaitDesc,
+					prometheus.CounterValue,
+					float64(vcpu.Wait)/1000/1000/1000,
+					domainName,
+					strconv.FormatInt(int64(cpuNum), 10))
+			}
 		}
 	}
 
