@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Fix `Dockerbuildimage` to use python2 and python2-dev. [14](https://github.com/AlexZzz/libvirt-exporter/issues/14)
+- Fix `Dockerbuildimage` to use python2 and python2-dev. Also fix `_PATH_MOUNTED` problem. [14](https://github.com/AlexZzz/libvirt-exporter/issues/14)
 
 ## [1.1.0] - 2021-03-19
 ### Added

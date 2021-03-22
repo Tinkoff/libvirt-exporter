@@ -6,7 +6,7 @@ ENV libvirt_version 3.8.0
 
 # Install dependencies
 RUN set -ex
-RUN apk add --update git gcc g++ make libc-dev portablexdr-dev linux-headers libnl-dev perl libtirpc-dev pkgconfig wget python2 python2-dev libxslt upx
+RUN apk add --update git gcc g++ make libc-dev portablexdr-dev linux-headers libnl-dev perl libtirpc-dev pkgconfig wget python2 python2-dev libxslt upx patch
 RUN wget ftp://xmlsoft.org/libxml2/libxml2-${libxml2_version}.tar.gz -P /tmp && \
     tar -xf /tmp/libxml2-${libxml2_version}.tar.gz -C /tmp
 WORKDIR /tmp/libxml2-${libxml2_version}
@@ -16,7 +16,10 @@ RUN ./configure --disable-shared --enable-static && \
 RUN wget https://libvirt.org/sources/libvirt-${libvirt_version}.tar.xz -P /tmp && \
     tar -xf /tmp/libvirt-${libvirt_version}.tar.xz -C /tmp
 WORKDIR /tmp/libvirt-${libvirt_version}
-RUN ./configure --disable-shared --enable-static --localstatedir=/var --without-storage-mpath && \
-    make -j$(nproc) && \
+COPY libvirt-patches libvirt-patches
+
+RUN patch -i libvirt-patches/0001-musl.patch -p1 && \
+    ./configure --disable-shared --enable-static --localstatedir=/var --without-storage-mpath && \
+    make -j2 && \
     make install && \
     sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
