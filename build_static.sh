@@ -17,10 +17,6 @@ cd libxml2-2.9.8
 make -j$(nproc)
 make install
 
-#cd /tmp
-#wget https://github.com/ninja-build/ninja/archive/refs/tags/v1.7.2.tar.gz
-#tar -xf ./ninja-1.7.2.tar.gz
-
 cd /tmp
 wget https://github.com/mesonbuild/meson/releases/download/0.54.3/meson-0.54.3.tar.gz
 tar -xf ./meson-0.54.3.tar.gz
