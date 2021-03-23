@@ -2,21 +2,25 @@
 FROM golang:alpine
 
 ENV libxml2_version 2.9.8
-ENV libvirt_version 3.8.0
+ENV libvirt_version 7.1.0
+ENV meson_version 0.54.3
 
 # Install dependencies
 RUN set -ex
-RUN apk add --update git gcc g++ make libc-dev portablexdr-dev linux-headers libnl-dev perl libtirpc-dev pkgconfig wget python python-dev libxslt upx
+RUN apk add ca-certificates g++ git go libnl-dev linux-headers make perl pkgconf libtirpc-dev wget libxslt python3 python3-dev rpcgen py3-docutils glib glib-dev gnutls-dev ninja
 RUN wget ftp://xmlsoft.org/libxml2/libxml2-${libxml2_version}.tar.gz -P /tmp && \
     tar -xf /tmp/libxml2-${libxml2_version}.tar.gz -C /tmp
 WORKDIR /tmp/libxml2-${libxml2_version}
 RUN ./configure --disable-shared --enable-static && \
     make -j$(nproc) && \
     make install
+RUN wget https://github.com/mesonbuild/meson/releases/download/${meson_version}/meson-${meson_version}.tar.gz -P /tmp && \
+    tar -xf /tmp/meson-${meson_version}.tar.gz -C /tmp
 RUN wget https://libvirt.org/sources/libvirt-${libvirt_version}.tar.xz -P /tmp && \
     tar -xf /tmp/libvirt-${libvirt_version}.tar.xz -C /tmp
-WORKDIR /tmp/libvirt-${libvirt_version}
-RUN ./configure --disable-shared --enable-static --localstatedir=/var --without-storage-mpath && \
-    make -j$(nproc) && \
-    make install && \
-    sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
+RUN wget https://libvirt.org/sources/libvirt-${libvirt_version}.tar.xz -P /tmp && \
+    tar -xf /tmp/libvirt-${libvirt_version}.tar.xz && \
+    cd /tmp/libvirt-${libvirt_version} && \
+    /tmp/meson-${meson_version}/meson.py build && \
+    ninja -C build && \
+    ninja -C build install

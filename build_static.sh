@@ -1,11 +1,11 @@
 #!/bin/sh
 
-docker run -i -v `pwd`:/libvirt-exporter alpine:3.8 /bin/sh << 'EOF'
+docker run -i -v `pwd`:/libvirt-exporter alpine:3.13 /bin/sh << 'EOF'
 set -ex
 
 # Install prerequisites for the build process.
 apk update
-apk add ca-certificates g++ git go libnl-dev linux-headers make perl pkgconf libtirpc-dev wget libxslt python python-dev
+apk add ca-certificates g++ git go libnl-dev linux-headers make perl pkgconf libtirpc-dev wget libxslt python3 python3-dev rpcgen py3-docutils glib glib-dev gnutls-dev ninja
 update-ca-certificates
 
 # Install libxml2. Alpine's version does not ship with a static library.
@@ -17,15 +17,24 @@ cd libxml2-2.9.8
 make -j$(nproc)
 make install
 
+#cd /tmp
+#wget https://github.com/ninja-build/ninja/archive/refs/tags/v1.7.2.tar.gz
+#tar -xf ./ninja-1.7.2.tar.gz
+
+cd /tmp
+wget https://github.com/mesonbuild/meson/releases/download/0.54.3/meson-0.54.3.tar.gz
+tar -xf ./meson-0.54.3.tar.gz
+
 # Install libvirt. Alpine's version does not ship with a static library.
 cd /tmp
-wget https://libvirt.org/sources/libvirt-3.8.0.tar.xz
-tar -xf libvirt-3.8.0.tar.xz
-cd libvirt-3.8.0
-./configure --disable-shared --enable-static --localstatedir=/var --without-storage-mpath
-make -j$(nproc)
-make install
-sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
+wget https://libvirt.org/sources/libvirt-7.1.0.tar.xz
+tar -xf libvirt-7.1.0.tar.xz
+cd libvirt-7.1.0
+/tmp/meson-0.54.3/meson.py build
+ninja -C build
+ninja -C build install
+
+#sed -i 's/^Libs:.*/& -lnl -ltirpc -lxml2/' /usr/local/lib/pkgconfig/libvirt.pc
 
 # Build the libvirt-exporter.
 cd /libvirt-exporter
