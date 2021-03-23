@@ -18,7 +18,6 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt" // Drop before merge
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
 	"github.com/libvirt/libvirt-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -26,6 +25,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
