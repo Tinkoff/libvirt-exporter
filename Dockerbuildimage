@@ -1,26 +1,14 @@
-# Stage 1: Build libvirt exporter
 FROM golang:alpine
 
 ENV libxml2_version 2.9.8
 ENV libvirt_version 7.1.0
 ENV meson_version 0.54.3
 
-# Install dependencies
 RUN set -ex
-RUN apk add ca-certificates g++ git go libnl-dev linux-headers make perl pkgconf libtirpc-dev wget libxslt python3 python3-dev rpcgen py3-docutils glib glib-dev gnutls-dev ninja
+RUN apk add ca-certificates g++ git go libnl-dev linux-headers make libvirt-dev libvirt
 RUN wget ftp://xmlsoft.org/libxml2/libxml2-${libxml2_version}.tar.gz -P /tmp && \
     tar -xf /tmp/libxml2-${libxml2_version}.tar.gz -C /tmp
 WORKDIR /tmp/libxml2-${libxml2_version}
-RUN ./configure --disable-shared --enable-static && \
+RUN ./configure && \
     make -j$(nproc) && \
     make install
-RUN wget https://github.com/mesonbuild/meson/releases/download/${meson_version}/meson-${meson_version}.tar.gz -P /tmp && \
-    tar -xf /tmp/meson-${meson_version}.tar.gz -C /tmp
-RUN wget https://libvirt.org/sources/libvirt-${libvirt_version}.tar.xz -P /tmp && \
-    tar -xf /tmp/libvirt-${libvirt_version}.tar.xz -C /tmp
-RUN wget https://libvirt.org/sources/libvirt-${libvirt_version}.tar.xz -P /tmp && \
-    tar -xf /tmp/libvirt-${libvirt_version}.tar.xz && \
-    cd /tmp/libvirt-${libvirt_version} && \
-    /tmp/meson-${meson_version}/meson.py build && \
-    ninja -C build && \
-    ninja -C build install

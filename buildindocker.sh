@@ -11,7 +11,7 @@ docker run --rm \
   -v "$PWD":/go/src/${REPO_URL} -w /go/src/${REPO_URL} \
   -e GOOS=linux \
   -e GOARCH=amd64 \
-   libvirtexporterbuild:latest go build --ldflags '-extldflags "-static"' -o ${BINARY_NAME}
+   libvirtexporterbuild:latest go build -o ${BINARY_NAME}
 
 strip ${BINARY_NAME}
 upx ${BINARY_NAME}
