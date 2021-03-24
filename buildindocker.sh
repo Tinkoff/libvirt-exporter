@@ -12,7 +12,3 @@ docker run --rm \
   -e GOOS=linux \
   -e GOARCH=amd64 \
    libvirtexporterbuild:latest go build -o ${BINARY_NAME}
-
-strip ${BINARY_NAME}
-upx ${BINARY_NAME}
-
