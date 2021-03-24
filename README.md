@@ -1,4 +1,11 @@
 # Prometheus libvirt exporter
+
+`build_static.sh` - builds a statically linked copy of this exporter in an Alpine Linux based container.
+`Dockerfile` - creates a docker container with dynamically linked libvirt-exporter. Make an image and run with `docker container run -p9177:9177 -v /var/run/libvirt:/var/run/libvirt yourcontainername`.
+`buildindocker.sh` - builds image based on `Dockerbuildimage` and builds dynamically-linked libvirt-exporter in that image.
+
+
+# Historical
 Project forked from https://github.com/kumina/libvirt_exporter and substantially rewritten.
 Implemented support for several additional metrics, ceph rbd (and network block devices), ovs.
 Implemented statistics collection using GetAllDomainStats
@@ -62,7 +69,3 @@ libvirt_domain_memory_stats_used_percent{domain="..."}
 
 libvirt_up
 ```
-
-Repository contains a shell script, `build_static.sh`, that builds a
-statically linked copy of this exporter in an Alpine Linux based
-container.
