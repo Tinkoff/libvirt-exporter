@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2021-03-26
+### Added
+- Add Vcpu Wait metric
+- gitignore: add libvirt-exporter
+- Add new build scripts
+
+### Changed
+- Bump libvirt-go to libvirt-go 7
+- Update docker builder to use new libvirt
+- Fix buildindocker to build dynamically linked with current libvirt
+- Fix Dockerfile to build dynamically linked with alpine's libvirt
+- Remove static builds and old building scripts
+- Remove libvirt-patches as we don't need them anymore
+- Make readme more informative
+
 ## [1.1.0] - 2021-03-19
 ### Added
 - Add per-vcpu stats: cpu number, time running and state.
