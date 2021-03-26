@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [[ "$#" -ne 1 ]]; then
+  printf "Need one arg. One of:\n"
+  ls -d ./build_containers/*
+  exit 1
+fi
+
+if [ -f "${1}" ]; then
+  DOCKERFILE=$1
+else
+  echo "Wrong argument, must be one of:"
+  ls -d ./build_containers/*
+  exit 1
+fi
+
+set -xeu
+
+DOCKERFILE=$1
+BINARY_NAME=libvirt-exporter
+
+docker build -t libvirtexporterbuild -f ${DOCKERFILE} .
+docker run --rm \
+  -v "$PWD":/libvirt-exporter -w /libvirt-exporter \
+  -e GOOS=linux \
+  -e GOARCH=amd64 \
+   libvirtexporterbuild:latest go build -o ${BINARY_NAME}

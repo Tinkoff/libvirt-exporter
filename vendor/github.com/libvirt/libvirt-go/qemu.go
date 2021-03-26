@@ -33,12 +33,8 @@ package libvirt
 // Can't rely on pkg-config for libvirt-qemu since it was not
 // installed until 2.6.0 onwards
 #cgo LDFLAGS: -lvirt-qemu
-#include <libvirt/libvirt.h>
-#include <libvirt/libvirt-qemu.h>
-#include <libvirt/virterror.h>
 #include <stdlib.h>
-#include "qemu_compat.h"
-#include "qemu_cfuncs.h"
+#include "qemu_wrapper.h"
 */
 import "C"
 
@@ -57,7 +53,7 @@ import (
  *	'info cpus'
  */
 
-type DomainQemuMonitorCommandFlags int
+type DomainQemuMonitorCommandFlags uint
 
 const (
 	DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT = DomainQemuMonitorCommandFlags(C.VIR_DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT)
@@ -74,21 +70,23 @@ const (
 	DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN = DomainQemuAgentCommandTimeout(C.VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN)
 )
 
-type DomainQemuMonitorEventFlags int
+type DomainQemuMonitorEventFlags uint
 
 const (
 	CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX  = DomainQemuMonitorEventFlags(C.VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
 	CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE = DomainQemuMonitorEventFlags(C.VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
 )
 
+// See also https://libvirt.org/html/libvirt-libvirt-qemu.html#virDomainQemuMonitorCommand
 func (d *Domain) QemuMonitorCommand(command string, flags DomainQemuMonitorCommandFlags) (string, error) {
 	var cResult *C.char
 	cCommand := C.CString(command)
 	defer C.free(unsafe.Pointer(cCommand))
-	result := C.virDomainQemuMonitorCommand(d.ptr, cCommand, &cResult, C.uint(flags))
+	var err C.virError
+	result := C.virDomainQemuMonitorCommandWrapper(d.ptr, cCommand, &cResult, C.uint(flags), &err)
 
 	if result != 0 {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	rstring := C.GoString(cResult)
@@ -96,13 +94,15 @@ func (d *Domain) QemuMonitorCommand(command string, flags DomainQemuMonitorComma
 	return rstring, nil
 }
 
+// See also https://libvirt.org/html/libvirt-libvirt-qemu.html#virDomainQemuAgentCommand
 func (d *Domain) QemuAgentCommand(command string, timeout DomainQemuAgentCommandTimeout, flags uint32) (string, error) {
 	cCommand := C.CString(command)
 	defer C.free(unsafe.Pointer(cCommand))
-	result := C.virDomainQemuAgentCommand(d.ptr, cCommand, C.int(timeout), C.uint(flags))
+	var err C.virError
+	result := C.virDomainQemuAgentCommandWrapper(d.ptr, cCommand, C.int(timeout), C.uint(flags), &err)
 
 	if result == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 
 	rstring := C.GoString(result)
@@ -110,11 +110,12 @@ func (d *Domain) QemuAgentCommand(command string, timeout DomainQemuAgentCommand
 	return rstring, nil
 }
 
+// See also https://libvirt.org/html/libvirt-libvirt-qemu.html#virDomainQemuAttach
 func (c *Connect) DomainQemuAttach(pid uint32, flags uint32) (*Domain, error) {
-
-	ptr := C.virDomainQemuAttach(c.ptr, C.uint(pid), C.uint(flags))
+	var err C.virError
+	ptr := C.virDomainQemuAttachWrapper(c.ptr, C.uint(pid), C.uint(flags), &err)
 	if ptr == nil {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	return &Domain{ptr: ptr}, nil
 }
@@ -151,40 +152,43 @@ func domainQemuMonitorEventCallback(c C.virConnectPtr, d C.virDomainPtr,
 
 }
 
+// See also https://libvirt.org/html/libvirt-libvirt-qemu.html#virConnectDomainQemuMonitorEventRegister
 func (c *Connect) DomainQemuMonitorEventRegister(dom *Domain, event string, callback DomainQemuMonitorEventCallback, flags DomainQemuMonitorEventFlags) (int, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002003 {
-		return 0, GetNotImplementedError("virConnectDomainQemuMonitorEventRegister")
+		return 0, makeNotImplementedError("virConnectDomainQemuMonitorEventRegister")
 	}
 
 	cEvent := C.CString(event)
 	defer C.free(unsafe.Pointer(cEvent))
 	goCallBackId := registerCallbackId(callback)
 
-	callbackPtr := unsafe.Pointer(C.domainQemuMonitorEventCallback_cgo)
 	var cdom C.virDomainPtr
 	if dom != nil {
 		cdom = dom.ptr
 	}
-	ret := C.virConnectDomainQemuMonitorEventRegister_cgo(c.ptr, cdom,
+	var err C.virError
+	ret := C.virConnectDomainQemuMonitorEventRegisterWrapper(c.ptr, cdom,
 		cEvent,
-		C.virConnectDomainQemuMonitorEventCallback(callbackPtr),
 		C.long(goCallBackId),
-		C.uint(flags))
-	if ret == -1 {
+		C.uint(flags), &err)
+	if ret < 0 {
 		freeCallbackId(goCallBackId)
-		return 0, GetLastError()
+		return 0, makeError(&err)
 	}
 	return int(ret), nil
 }
 
+// See also https://libvirt.org/html/libvirt-libvirt-qemu.html#virConnectDomainQemuMonitorEventDeregister
 func (c *Connect) DomainQemuEventDeregister(callbackId int) error {
 	if C.LIBVIR_VERSION_NUMBER < 1002003 {
-		return GetNotImplementedError("virConnectDomainQemuMonitorEventDeregister")
+		return makeNotImplementedError("virConnectDomainQemuMonitorEventDeregister")
 	}
 
 	// Deregister the callback
-	if i := int(C.virConnectDomainQemuMonitorEventDeregisterCompat(c.ptr, C.int(callbackId))); i != 0 {
-		return GetLastError()
+	var err C.virError
+	ret := int(C.virConnectDomainQemuMonitorEventDeregisterWrapper(c.ptr, C.int(callbackId), &err))
+	if ret < 0 {
+		return makeError(&err)
 	}
 	return nil
 }

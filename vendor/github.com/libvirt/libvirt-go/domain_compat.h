@@ -68,11 +68,6 @@
 #define VIR_MIGRATE_AUTO_CONVERGE 1 << 13
 #endif
 
-int virDomainCoreDumpWithFormatCompat(virDomainPtr domain,
-				      const char *to,
-				      unsigned int dumpformat,
-				      unsigned int flags);
-
 
 /* 1.2.5 */
 
@@ -87,27 +82,6 @@ int virDomainCoreDumpWithFormatCompat(virDomainPtr domain,
 #ifndef VIR_DOMAIN_TIME_SYNC
 #define VIR_DOMAIN_TIME_SYNC 1 << 0
 #endif
-
-int virDomainGetTimeCompat(virDomainPtr dom,
-			   long long *seconds,
-			   unsigned int *nseconds,
-			   unsigned int flags);
-
-int virDomainSetTimeCompat(virDomainPtr dom,
-			   long long seconds,
-			   unsigned int nseconds,
-			   unsigned int flags);
-
-int virDomainFSFreezeCompat(virDomainPtr dom,
-			    const char **mountpoints,
-			    unsigned int nmountpoints,
-			    unsigned int flags);
-
-int virDomainFSThawCompat(virDomainPtr dom,
-			  const char **mountpoints,
-			  unsigned int nmountpoints,
-			  unsigned int flags);
-
 
 /* 1.2.6 */
 
@@ -160,17 +134,6 @@ int virDomainFSThawCompat(virDomainPtr dom,
 #ifndef VIR_DOMAIN_STATS_STATE
 #define VIR_DOMAIN_STATS_STATE 1 << 0
 #endif
-
-int virDomainBlockCopyCompat(virDomainPtr dom, const char *disk,
-			     const char *destxml,
-			     virTypedParameterPtr params,
-			     int nparams,
-			     unsigned int flags);
-
-int virDomainOpenGraphicsFDCompat(virDomainPtr dom,
-				  unsigned int idx,
-				  unsigned int flags);
-
 
 /* 1.2.9 */
 
@@ -374,13 +337,6 @@ struct _virDomainFSInfo {
 };
 #endif
 
-void virDomainFSInfoFreeCompat(virDomainFSInfoPtr info);
-
-int virDomainGetFSInfoCompat(virDomainPtr dom,
-			     virDomainFSInfoPtr **info,
-			     unsigned int flags);
-
-
 /* 1.2.12 */
 
 #ifndef VIR_DOMAIN_DEFINE_VALIDATE
@@ -450,24 +406,6 @@ struct _virDomainInterface {
 };
 #endif
 
-int virDomainInterfaceAddressesCompat(virDomainPtr dom,
-				      virDomainInterfacePtr **ifaces,
-				      unsigned int source,
-				      unsigned int flags);
-
-void virDomainInterfaceFreeCompat(virDomainInterfacePtr iface);
-
-void virDomainIOThreadInfoFreeCompat(virDomainIOThreadInfoPtr info);
-
-int virDomainGetIOThreadInfoCompat(virDomainPtr domain,
-				   virDomainIOThreadInfoPtr **info,
-				   unsigned int flags);
-int virDomainPinIOThreadCompat(virDomainPtr domain,
-			       unsigned int iothread_id,
-			       unsigned char *cpumap,
-			       int maplen,
-			       unsigned int flags);
-
 
 /* 1.2.15 */
 
@@ -483,24 +421,12 @@ int virDomainPinIOThreadCompat(virDomainPtr domain,
 #define VIR_DOMAIN_EVENT_ID_DEVICE_ADDED 19
 #endif
 
-int virDomainAddIOThreadCompat(virDomainPtr domain,
-			       unsigned int iothread_id,
-			       unsigned int flags);
-int virDomainDelIOThreadCompat(virDomainPtr domain,
-			       unsigned int iothread_id,
-			       unsigned int flags);
-
 
 /* 1.2.16 */
 
 #ifndef VIR_DOMAIN_PASSWORD_ENCRYPTED
 #define VIR_DOMAIN_PASSWORD_ENCRYPTED 1 << 0
 #endif
-
-int virDomainSetUserPasswordCompat(virDomainPtr dom,
-				   const char *user,
-				   const char *password,
-				   unsigned int flags);
 
 
 /* 1.2.17 */
@@ -527,10 +453,6 @@ int virDomainSetUserPasswordCompat(virDomainPtr dom,
 #ifndef VIR_DOMAIN_EVENT_UNDEFINED_RENAMED
 #define VIR_DOMAIN_EVENT_UNDEFINED_RENAMED 1
 #endif
-
-int virDomainRenameCompat(virDomainPtr dom,
-			  const char *new_name,
-			  unsigned int flags);
 
 
 /* 1.3.1 */
@@ -617,18 +539,6 @@ int virDomainRenameCompat(virDomainPtr dom,
 #define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA "cputune.global_quota"
 #endif
 
-int virDomainGetPerfEventsCompat(virDomainPtr dom,
-				 virTypedParameterPtr *params,
-				 int *nparams,
-				 unsigned int flags);
-int virDomainSetPerfEventsCompat(virDomainPtr dom,
-				 virTypedParameterPtr params,
-				 int nparams,
-				 unsigned int flags);
-int virDomainMigrateStartPostCopyCompat(virDomainPtr domain,
-					unsigned int flags);
-
-
 /* 1.3.4 */
 
 #ifndef VIR_MIGRATE_PARAM_COMPRESSION
@@ -684,17 +594,6 @@ int virDomainMigrateStartPostCopyCompat(virDomainPtr domain,
 #ifndef VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT
 #define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT "auto_converge.increment"
 #endif
-
-int virDomainGetGuestVcpusCompat(virDomainPtr domain,
-				 virTypedParameterPtr *params,
-				 unsigned int *nparams,
-				 unsigned int flags);
-
-int virDomainSetGuestVcpusCompat(virDomainPtr domain,
-				 const char *cpumap,
-				 int state,
-				 unsigned int flags);
-
 
 /* 2.1.0 */
 
@@ -876,13 +775,6 @@ int virDomainSetGuestVcpusCompat(virDomainPtr domain,
 #define VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME "blkdeviotune.group_name"
 #endif
 
-/* 3.1.0 */
-
-int virDomainSetVcpuCompat(virDomainPtr domain,
-			   const char *cpumap,
-			   int state,
-			   unsigned int flags);
-
 /* 3.2.0 */
 
 #ifndef VIR_MIGRATE_TLS
@@ -892,11 +784,6 @@ int virDomainSetVcpuCompat(virDomainPtr domain,
 #ifndef VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD
 #define VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD 24
 #endif
-
-int virDomainSetBlockThresholdCompat(virDomainPtr domain,
-                                     const char *dev,
-                                     unsigned long long threshold,
-                                     unsigned int flags);
 
 /* 3.3.0 */
 
@@ -959,18 +846,6 @@ int virDomainSetBlockThresholdCompat(virDomainPtr domain,
 #endif
 
 
-/* 3.7.0 */
-
-int virDomainMigrateGetMaxDowntimeCompat(virDomainPtr domain,
-					 unsigned long long *downtime,
-					 unsigned int flags);
-
-char *virDomainManagedSaveGetXMLDescCompat(virDomainPtr domain,
-					   unsigned int flags);
-int virDomainManagedSaveDefineXMLCompat(virDomainPtr domain,
-					const char *dxml,
-					unsigned int flags);
-
 /* 3.9.0 */
 
 #ifndef VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE
@@ -1013,9 +888,266 @@ int virDomainManagedSaveDefineXMLCompat(virDomainPtr domain,
 #define VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART 5
 #endif
 
-int virDomainSetLifecycleActionCompat(virDomainPtr domain,
-                                      unsigned int type,
-                                      unsigned int action,
-                                      unsigned int flags);
+/* 4.2.0 */
+
+#ifndef VIR_KEYCODE_SET_QNUM
+#define VIR_KEYCODE_SET_QNUM 9
+#endif
+
+#ifndef VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP
+#define VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP 2
+#endif
+
+/* 4.5.0 */
+
+
+#ifndef VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT
+#define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
+#endif
+
+/* 4.6.0 */
+
+#ifndef VIR_DOMAIN_MEMORY_STAT_DISK_CACHES
+#define VIR_DOMAIN_MEMORY_STAT_DISK_CACHES 10
+#endif
+
+/* 4.10.0 */
+
+#ifndef VIR_DOMAIN_SHUTOFF_DAEMON
+#define VIR_DOMAIN_SHUTOFF_DAEMON 8
+#endif
+
+#ifndef VIR_DOMAIN_STATS_IOTHREAD
+#define VIR_DOMAIN_STATS_IOTHREAD (1 << 7)
+#endif
+
+#ifndef VIR_DOMAIN_IOTHREAD_POLL_GROW
+#define VIR_DOMAIN_IOTHREAD_POLL_GROW "poll_grow"
+#endif
+
+#ifndef VIR_DOMAIN_IOTHREAD_POLL_SHRINK
+#define VIR_DOMAIN_IOTHREAD_POLL_SHRINK "poll_shrink"
+#endif
+
+#ifndef VIR_DOMAIN_IOTHREAD_POLL_MAX_NS
+#define VIR_DOMAIN_IOTHREAD_POLL_MAX_NS "poll_max_ns"
+#endif
+
+/* 5.0.0 */
+
+#ifndef VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS
+#define VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS "memory_postcopy_requests"
+#endif
+
+/* 5.1.0 */
+#ifndef VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY
+#define VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY "bandwidth.postcopy"
+#endif
+
+#ifndef VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY
+#define VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_SNAPSHOT_XML_SECURE
+#define VIR_DOMAIN_SNAPSHOT_XML_SECURE (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_SAVE_IMAGE_XML_SECURE
+#define VIR_DOMAIN_SAVE_IMAGE_XML_SECURE (1 << 0)
+#endif
+
+/* 5.2.0 */
+
+#ifndef VIR_MIGRATE_PARALLEL
+#define VIR_MIGRATE_PARALLEL (1 << 17)
+#endif
+
+#ifndef VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS
+#define VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS "parallel.connections"
+#endif
+
+/* 5.4.0 */
+
+#ifndef VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC
+#define VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC 11
+#endif
+
+#ifndef VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL
+#define VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL 12
+#endif
+
+
+/* 5.6.0 */
+
+#ifndef VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA
+# define VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA (1 << 4)
+#endif
+
+
+/* 5.7.0 */
+
+#ifndef VIR_DOMAIN_GUEST_INFO_USERS
+#define VIR_DOMAIN_GUEST_INFO_USERS (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_GUEST_INFO_OS
+#define VIR_DOMAIN_GUEST_INFO_OS (1 << 1)
+#endif
+
+#ifndef VIR_DOMAIN_GUEST_INFO_TIMEZONE
+#define VIR_DOMAIN_GUEST_INFO_TIMEZONE (1 << 2)
+#endif
+
+#ifndef VIR_DOMAIN_GUEST_INFO_HOSTNAME
+#define VIR_DOMAIN_GUEST_INFO_HOSTNAME (1 << 3)
+#endif
+
+#ifndef VIR_DOMAIN_GUEST_INFO_FILESYSTEM
+#define VIR_DOMAIN_GUEST_INFO_FILESYSTEM (1 << 4)
+#endif
+
+/* 5.10.0 */
+
+#ifndef VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK
+#define VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK -2
+#endif
+
+#ifndef VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT
+#define VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT -1
+#endif
+
+#ifndef VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT
+#define VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT 0
+#endif
+
+/* 6.0.0 */
+
+#ifndef VIR_DOMAIN_JOB_SUCCESS
+#define VIR_DOMAIN_JOB_SUCCESS "success"
+#endif
+
+#ifndef VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED
+#define VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED (1 << 1)
+#endif
+
+#ifndef VIR_MIGRATE_PARAM_TLS_DESTINATION
+#define VIR_MIGRATE_PARAM_TLS_DESTINATION "tls.destination"
+#endif
+
+#ifndef VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP
+#define VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP 5
+#endif
+
+#ifndef VIR_DOMAIN_JOB_OPERATION_BACKUP
+#define VIR_DOMAIN_JOB_OPERATION_BACKUP 9
+#endif
+
+#ifndef VIR_DOMAIN_JOB_DISK_TEMP_USED
+#define VIR_DOMAIN_JOB_DISK_TEMP_USED "disk_temp_used"
+#endif
+
+#ifndef VIR_DOMAIN_JOB_DISK_TEMP_TOTAL
+#define VIR_DOMAIN_JOB_DISK_TEMP_TOTAL "disk_temp_total"
+#endif
+
+#ifndef VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL
+#define VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_STATS_MEMORY
+#define VIR_DOMAIN_STATS_MEMORY (1 << 8)
+#endif
+
+/* 6.1.0 */
+
+#ifndef VIR_DOMAIN_GET_HOSTNAME_LEASE
+#define VIR_DOMAIN_GET_HOSTNAME_LEASE (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_GET_HOSTNAME_AGENT
+#define VIR_DOMAIN_GET_HOSTNAME_AGENT (1 << 1)
+#endif
+
+#ifndef VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED
+#define VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED 1
+#endif
+
+/* 6.3.0 */
+
+#ifndef VIR_DOMAIN_JOB_ERRMSG
+#define VIR_DOMAIN_JOB_ERRMSG "errmsg"
+#endif
+
+
+/* 6.8.0 */
+
+#ifndef VIR_MIGRATE_PARAM_DISKS_URI
+#define VIR_MIGRATE_PARAM_DISKS_URI "disks_uri"
+#endif
+
+
+/* 6.9.0 */
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_HYPERVISOR
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_HYPERVISOR 0
+#endif
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_GUEST
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_GUEST 1
+#endif
+
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_IGNORE
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_IGNORE 0
+#endif
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_INJECT
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_INJECT 1
+#endif
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_FATAL
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_FATAL 2
+#endif
+
+#ifndef VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_RESET
+#define VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_RESET 3
+#endif
+
+
+#ifndef VIR_DOMAIN_MEMORY_FAILURE_ACTION_REQUIRED
+#define VIR_DOMAIN_MEMORY_FAILURE_ACTION_REQUIRED (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE
+#define VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE (1 << 1)
+#endif
+
+
+#ifndef VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE
+#define VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE 25
+#endif
+
+#ifndef VIR_VCPU_INFO_CPU_OFFLINE
+#define VIR_VCPU_INFO_CPU_OFFLINE -1
+#endif
+
+#ifndef VIR_VCPU_INFO_CPU_UNAVAILABLE
+#define VIR_VCPU_INFO_CPU_UNAVAILABLE -2
+#endif
+
+#ifndef VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND
+#define VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND (1 << 0)
+#endif
+
+#ifndef VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE
+#define VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE (1 << 1)
+#endif
+
+/* 7.0.0 */
+
+#ifndef VIR_DOMAIN_GUEST_INFO_DISKS
+#define VIR_DOMAIN_GUEST_INFO_DISKS (1 << 5)
+#endif
+
 
 #endif /* LIBVIRT_GO_DOMAIN_COMPAT_H__ */

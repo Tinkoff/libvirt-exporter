@@ -28,14 +28,13 @@ package libvirt
 
 /*
 #cgo pkg-config: libvirt
-#include <libvirt/libvirt.h>
-#include <libvirt/virterror.h>
 #include <stdlib.h>
-#include "network_compat.h"
+#include "network_wrapper.h"
 */
 import "C"
 
 import (
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -48,7 +47,7 @@ const (
 	IP_ADDR_TYPE_IPV6 = IPAddrType(C.VIR_IP_ADDR_TYPE_IPV6)
 )
 
-type NetworkXMLFlags int
+type NetworkXMLFlags uint
 
 const (
 	NETWORK_XML_INACTIVE = NetworkXMLFlags(C.VIR_NETWORK_XML_INACTIVE)
@@ -82,7 +81,7 @@ const (
 	NETWORK_SECTION_DNS_SRV           = NetworkUpdateSection(C.VIR_NETWORK_SECTION_DNS_SRV)
 )
 
-type NetworkUpdateFlags int
+type NetworkUpdateFlags uint
 
 const (
 	NETWORK_UPDATE_AFFECT_CURRENT = NetworkUpdateFlags(C.VIR_NETWORK_UPDATE_AFFECT_CURRENT)
@@ -123,45 +122,50 @@ type NetworkDHCPLease struct {
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkFree
 func (n *Network) Free() error {
-	ret := C.virNetworkFree(n.ptr)
+	var err C.virError
+	ret := C.virNetworkFreeWrapper(n.ptr, &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkRef
 func (c *Network) Ref() error {
-	ret := C.virNetworkRef(c.ptr)
+	var err C.virError
+	ret := C.virNetworkRefWrapper(c.ptr, &err)
 	if ret == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkCreate
 func (n *Network) Create() error {
-	result := C.virNetworkCreate(n.ptr)
+	var err C.virError
+	result := C.virNetworkCreateWrapper(n.ptr, &err)
 	if result == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkDestroy
 func (n *Network) Destroy() error {
-	result := C.virNetworkDestroy(n.ptr)
+	var err C.virError
+	result := C.virNetworkDestroyWrapper(n.ptr, &err)
 	if result == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkIsActive
 func (n *Network) IsActive() (bool, error) {
-	result := C.virNetworkIsActive(n.ptr)
+	var err C.virError
+	result := C.virNetworkIsActiveWrapper(n.ptr, &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	if result == 1 {
 		return true, nil
@@ -171,9 +175,10 @@ func (n *Network) IsActive() (bool, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkIsPersistent
 func (n *Network) IsPersistent() (bool, error) {
-	result := C.virNetworkIsPersistent(n.ptr)
+	var err C.virError
+	result := C.virNetworkIsPersistentWrapper(n.ptr, &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	if result == 1 {
 		return true, nil
@@ -184,9 +189,10 @@ func (n *Network) IsPersistent() (bool, error) {
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkGetAutostart
 func (n *Network) GetAutostart() (bool, error) {
 	var out C.int
-	result := C.virNetworkGetAutostart(n.ptr, (*C.int)(unsafe.Pointer(&out)))
+	var err C.virError
+	result := C.virNetworkGetAutostartWrapper(n.ptr, (*C.int)(unsafe.Pointer(&out)), &err)
 	if result == -1 {
-		return false, GetLastError()
+		return false, makeError(&err)
 	}
 	switch out {
 	case 1:
@@ -205,18 +211,20 @@ func (n *Network) SetAutostart(autostart bool) error {
 	default:
 		cAutostart = 0
 	}
-	result := C.virNetworkSetAutostart(n.ptr, cAutostart)
+	var err C.virError
+	result := C.virNetworkSetAutostartWrapper(n.ptr, cAutostart, &err)
 	if result == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkGetName
 func (n *Network) GetName() (string, error) {
-	name := C.virNetworkGetName(n.ptr)
+	var err C.virError
+	name := C.virNetworkGetNameWrapper(n.ptr, &err)
 	if name == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	return C.GoString(name), nil
 }
@@ -225,9 +233,10 @@ func (n *Network) GetName() (string, error) {
 func (n *Network) GetUUID() ([]byte, error) {
 	var cUuid [C.VIR_UUID_BUFLEN](byte)
 	cuidPtr := unsafe.Pointer(&cUuid)
-	result := C.virNetworkGetUUID(n.ptr, (*C.uchar)(cuidPtr))
+	var err C.virError
+	result := C.virNetworkGetUUIDWrapper(n.ptr, (*C.uchar)(cuidPtr), &err)
 	if result != 0 {
-		return []byte{}, GetLastError()
+		return []byte{}, makeError(&err)
 	}
 	return C.GoBytes(cuidPtr, C.VIR_UUID_BUFLEN), nil
 }
@@ -236,18 +245,20 @@ func (n *Network) GetUUID() ([]byte, error) {
 func (n *Network) GetUUIDString() (string, error) {
 	var cUuid [C.VIR_UUID_STRING_BUFLEN](C.char)
 	cuidPtr := unsafe.Pointer(&cUuid)
-	result := C.virNetworkGetUUIDString(n.ptr, (*C.char)(cuidPtr))
+	var err C.virError
+	result := C.virNetworkGetUUIDStringWrapper(n.ptr, (*C.char)(cuidPtr), &err)
 	if result != 0 {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	return C.GoString((*C.char)(cuidPtr)), nil
 }
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkGetBridgeName
 func (n *Network) GetBridgeName() (string, error) {
-	result := C.virNetworkGetBridgeName(n.ptr)
+	var err C.virError
+	result := C.virNetworkGetBridgeNameWrapper(n.ptr, &err)
 	if result == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	bridge := C.GoString(result)
 	C.free(unsafe.Pointer(result))
@@ -256,9 +267,10 @@ func (n *Network) GetBridgeName() (string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkGetXMLDesc
 func (n *Network) GetXMLDesc(flags NetworkXMLFlags) (string, error) {
-	result := C.virNetworkGetXMLDesc(n.ptr, C.uint(flags))
+	var err C.virError
+	result := C.virNetworkGetXMLDescWrapper(n.ptr, C.uint(flags), &err)
 	if result == nil {
-		return "", GetLastError()
+		return "", makeError(&err)
 	}
 	xml := C.GoString(result)
 	C.free(unsafe.Pointer(result))
@@ -267,9 +279,10 @@ func (n *Network) GetXMLDesc(flags NetworkXMLFlags) (string, error) {
 
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkUndefine
 func (n *Network) Undefine() error {
-	result := C.virNetworkUndefine(n.ptr)
+	var err C.virError
+	result := C.virNetworkUndefineWrapper(n.ptr, &err)
 	if result == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
@@ -278,9 +291,10 @@ func (n *Network) Undefine() error {
 func (n *Network) Update(cmd NetworkUpdateCommand, section NetworkUpdateSection, parentIndex int, xml string, flags NetworkUpdateFlags) error {
 	cxml := C.CString(xml)
 	defer C.free(unsafe.Pointer(cxml))
-	result := C.virNetworkUpdate(n.ptr, C.uint(cmd), C.uint(section), C.int(parentIndex), cxml, C.uint(flags))
+	var err C.virError
+	result := C.virNetworkUpdateWrapper(n.ptr, C.uint(cmd), C.uint(section), C.int(parentIndex), cxml, C.uint(flags), &err)
 	if result == -1 {
-		return GetLastError()
+		return makeError(&err)
 	}
 	return nil
 }
@@ -288,12 +302,13 @@ func (n *Network) Update(cmd NetworkUpdateCommand, section NetworkUpdateSection,
 // See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkGetDHCPLeases
 func (n *Network) GetDHCPLeases() ([]NetworkDHCPLease, error) {
 	if C.LIBVIR_VERSION_NUMBER < 1002006 {
-		return []NetworkDHCPLease{}, GetNotImplementedError("virNetworkGetDHCPLeases")
+		return []NetworkDHCPLease{}, makeNotImplementedError("virNetworkGetDHCPLeases")
 	}
 	var cLeases *C.virNetworkDHCPLeasePtr
-	numLeases := C.virNetworkGetDHCPLeasesCompat(n.ptr, nil, (**C.virNetworkDHCPLeasePtr)(&cLeases), C.uint(0))
+	var err C.virError
+	numLeases := C.virNetworkGetDHCPLeasesWrapper(n.ptr, nil, (**C.virNetworkDHCPLeasePtr)(&cLeases), C.uint(0), &err)
 	if numLeases == -1 {
-		return nil, GetLastError()
+		return nil, makeError(&err)
 	}
 	hdr := reflect.SliceHeader{
 		Data: uintptr(unsafe.Pointer(cLeases)),
@@ -314,8 +329,87 @@ func (n *Network) GetDHCPLeases() ([]NetworkDHCPLease, error) {
 			Hostname:   C.GoString(clease.hostname),
 			Clientid:   C.GoString(clease.clientid),
 		})
-		C.virNetworkDHCPLeaseFreeCompat(clease)
+		C.virNetworkDHCPLeaseFreeWrapper(clease)
 	}
 	C.free(unsafe.Pointer(cLeases))
 	return leases, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkPortLookupByUUIDString
+func (n *Network) LookupNetworkPortByUUIDString(uuid string) (*NetworkPort, error) {
+	if C.LIBVIR_VERSION_NUMBER < 5005000 {
+		return nil, makeNotImplementedError("virNetworkPortLookupByUUIDString")
+	}
+
+	cUuid := C.CString(uuid)
+	defer C.free(unsafe.Pointer(cUuid))
+	var err C.virError
+	ptr := C.virNetworkPortLookupByUUIDStringWrapper(n.ptr, cUuid, &err)
+	if ptr == nil {
+		return nil, makeError(&err)
+	}
+	return &NetworkPort{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkPortLookupByUUID
+func (n *Network) LookupNetworkPortByUUID(uuid []byte) (*NetworkPort, error) {
+	if C.LIBVIR_VERSION_NUMBER < 5005000 {
+		return nil, makeNotImplementedError("virNetworkPortLookupByUUID")
+	}
+
+	if len(uuid) != C.VIR_UUID_BUFLEN {
+		return nil, fmt.Errorf("UUID must be exactly %d bytes in size",
+			int(C.VIR_UUID_BUFLEN))
+	}
+	cUuid := make([]C.uchar, C.VIR_UUID_BUFLEN)
+	for i := 0; i < C.VIR_UUID_BUFLEN; i++ {
+		cUuid[i] = C.uchar(uuid[i])
+	}
+	var err C.virError
+	ptr := C.virNetworkPortLookupByUUIDWrapper(n.ptr, &cUuid[0], &err)
+	if ptr == nil {
+		return nil, makeError(&err)
+	}
+	return &NetworkPort{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkPortCreateXML
+func (n *Network) PortCreateXML(xmlConfig string, flags uint32) (*NetworkPort, error) {
+	if C.LIBVIR_VERSION_NUMBER < 5005000 {
+		return nil, makeNotImplementedError("virNetworkPortCreateXML")
+	}
+	cXml := C.CString(string(xmlConfig))
+	defer C.free(unsafe.Pointer(cXml))
+	var err C.virError
+	ptr := C.virNetworkPortCreateXMLWrapper(n.ptr, cXml, C.uint(flags), &err)
+	if ptr == nil {
+		return nil, makeError(&err)
+	}
+	return &NetworkPort{ptr: ptr}, nil
+}
+
+// See also https://libvirt.org/html/libvirt-libvirt-network.html#virNetworkListAllPorts
+func (n *Network) ListAllPorts(flags uint32) ([]NetworkPort, error) {
+	if C.LIBVIR_VERSION_NUMBER < 5005000 {
+		return []NetworkPort{}, makeNotImplementedError("virNetworkListAllPorts")
+	}
+
+	var cList *C.virNetworkPortPtr
+	var err C.virError
+	numPorts := C.virNetworkListAllPortsWrapper(n.ptr, (**C.virNetworkPortPtr)(&cList), C.uint(flags), &err)
+	if numPorts == -1 {
+		return []NetworkPort{}, makeError(&err)
+	}
+	hdr := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(cList)),
+		Len:  int(numPorts),
+		Cap:  int(numPorts),
+	}
+	var ports []NetworkPort
+	slice := *(*[]C.virNetworkPortPtr)(unsafe.Pointer(&hdr))
+	for _, ptr := range slice {
+		ports = append(ports, NetworkPort{ptr})
+	}
+	C.free(unsafe.Pointer(cList))
+	return ports, nil
 }
