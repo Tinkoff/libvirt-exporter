@@ -4,7 +4,7 @@ ENV PATH=$PATH:/usr/local/go/bin
 
 RUN set -ex && \
     apt update && \
-    DEBIAN_FRONTEND=noninteractive apt install -yq g++ linux-headers-$(uname -r) libvirt0 libvirt-dev wget && \
+    DEBIAN_FRONTEND=noninteractive apt install -yq g++ libvirt0 libvirt-dev wget && \
     wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz && \
     rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.2.linux-amd64.tar.gz && \
     export PATH=$PATH:/usr/local/go/bin
