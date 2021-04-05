@@ -19,7 +19,7 @@ package main
 import (
 	"encoding/xml"
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
-	"github.com/libvirt/libvirt-go"
+	"libvirt.org/libvirt-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -74,6 +74,14 @@ var (
 		"Amount of CPU time used by the domain's VCPU, in seconds.",
 		[]string{"domain", "vcpu"},
 		nil)
+	libvirtDomainVcpuDelayDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_vcpu", "delay_seconds_total"),
+		"Amount of CPU time used by the domain's VCPU, in seconds."+
+    "Vcpu's delay metric. Time the vcpu thread was enqueued by the "+
+      "host scheduler, but was waiting in the queue instead of running. "+
+      "Exposed to the VM as a steal time.",
+		[]string{"domain", "vcpu"},
+		nil)
 	libvirtDomainVcpuStateDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_vcpu", "state"),
 		"VCPU state. 0: offline, 1: running, 2: blocked",
@@ -85,7 +93,7 @@ var (
 		[]string{"domain", "vcpu"},
 		nil)
 	libvirtDomainVcpuWaitDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "domain_vcpu", "wait"),
+		prometheus.BuildFQName("libvirt", "domain_vcpu", "wait_seconds_total"),
 		"Vcpu's wait_sum metric. CONFIG_SCHEDSTATS has to be enabled",
 		[]string{"domain", "vcpu"},
 		nil)
@@ -359,6 +367,14 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 					libvirtDomainVcpuWaitDesc,
 					prometheus.CounterValue,
 					float64(vcpu.Wait)/1000/1000/1000,
+					domainName,
+					strconv.FormatInt(int64(cpuNum), 10))
+			}
+			if vcpu.DelaySet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainVcpuDelayDesc,
+					prometheus.CounterValue,
+					float64(vcpu.Delay)/1e9,
 					domainName,
 					strconv.FormatInt(int64(cpuNum), 10))
 			}
@@ -726,6 +742,7 @@ func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	// VCPU info
 	ch <- libvirtDomainVcpuStateDesc
 	ch <- libvirtDomainVcpuTimeDesc
+	ch <- libvirtDomainVcpuDelayDesc
 	ch <- libvirtDomainVcpuCPUDesc
 	ch <- libvirtDomainVcpuWaitDesc
 
