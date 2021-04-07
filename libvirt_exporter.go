@@ -165,6 +165,105 @@ var (
 		[]string{"domain", "target_device"},
 		nil)
 
+	// Block IO tune parameters
+	// Limits
+	libvirtDomainBlockTotalBytesSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_total_bytes"),
+		"Total throughput limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteBytesSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_write_bytes"),
+		"Write throughput limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadBytesSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_read_bytes"),
+		"Read throughput limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockTotalIopsSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_total_requests"),
+		"Total requests per second limit",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteIopsSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_write_requests"),
+		"Write requests per second limit",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadIopsSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_read_requests"),
+		"Read requests per second limit",
+		[]string{"domain", "target_device"},
+		nil)
+	// Burst limits
+	libvirtDomainBlockTotalBytesSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_total_bytes"),
+		"Total throughput burst limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteBytesSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_write_bytes"),
+		"Write throughput burst limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadBytesSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_read_bytes"),
+		"Read throughput burst limit in bytes per second",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockTotalIopsSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_total_requests"),
+		"Total requests per second burst limit",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteIopsSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_write_requests"),
+		"Write requests per second burst limit",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadIopsSecMaxDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_read_requests"),
+		"Read requests per second burst limit",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockTotalBytesSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_total_bytes_length_seconds"),
+		"Total throughput burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteBytesSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_write_bytes_length_seconds"),
+		"Write throughput burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadBytesSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_read_bytes_length_seconds"),
+		"Read throughput burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockTotalIopsSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_length_total_requests_seconds"),
+		"Total requests per second burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockWriteIopsSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_length_write_requests_seconds"),
+		"Write requests per second burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockReadIopsSecMaxLengthDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "limit_burst_length_read_requests_seconds"),
+		"Read requests per second burst time in seconds",
+		[]string{"domain", "target_device"},
+		nil)
+	libvirtDomainBlockSizeIopsSecDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_block_stats", "size_iops_bytes"),
+		"The size of IO operations per second permitted through a block device",
+		[]string{"domain", "target_device"},
+		nil)
+
 	libvirtDomainMetaInterfacesDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_interface", "meta"),
 		"Interfaces metadata. Source bridge, target device, interface uuid",
@@ -511,6 +610,166 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 				libvirtDomainBlockPhysicalSizeBytesDesc,
 				prometheus.GaugeValue,
 				float64(disk.Physical),
+				domainName,
+				disk.Name)
+		}
+
+		blockIOTuneParams, err := stat.Domain.GetBlockIoTune(disk.Name, 0)
+		if err != nil {
+			lverr, ok := err.(libvirt.Error)
+			if !ok || lverr.Code != libvirt.ERR_OPERATION_INVALID {
+				return err
+			}
+		}
+		if blockIOTuneParams.TotalBytesSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalBytesSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalBytesSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadBytesSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadBytesSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadBytesSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteBytesSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteBytesSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteBytesSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.TotalIopsSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalIopsSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalIopsSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadIopsSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadIopsSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadIopsSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteIopsSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteIopsSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteIopsSec),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.TotalBytesSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalBytesSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalBytesSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadBytesSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadBytesSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadBytesSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteBytesSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteBytesSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteBytesSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.TotalIopsSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalIopsSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalIopsSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadIopsSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadIopsSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadIopsSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteIopsSecMaxSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteIopsSecMaxDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteIopsSecMax),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.TotalBytesSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalBytesSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalBytesSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadBytesSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadBytesSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadBytesSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteBytesSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteBytesSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteBytesSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.TotalIopsSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockTotalIopsSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.TotalIopsSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.ReadIopsSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockReadIopsSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.ReadIopsSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.WriteIopsSecMaxLengthSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockWriteIopsSecMaxLengthDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.WriteIopsSecMaxLength),
+				domainName,
+				disk.Name)
+		}
+		if blockIOTuneParams.SizeIopsSecSet {
+			ch <- prometheus.MustNewConstMetric(
+				libvirtDomainBlockSizeIopsSecDesc,
+				prometheus.GaugeValue,
+				float64(blockIOTuneParams.SizeIopsSec),
 				domainName,
 				disk.Name)
 		}
