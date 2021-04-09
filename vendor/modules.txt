@@ -7,8 +7,6 @@ github.com/alecthomas/units
 github.com/beorn7/perks/quantile
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
-# github.com/libvirt/libvirt-go v7.0.0+incompatible
-github.com/libvirt/libvirt-go
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/prometheus/client_golang v1.1.0
@@ -28,3 +26,5 @@ github.com/prometheus/procfs/internal/fs
 golang.org/x/sys/windows
 # gopkg.in/alecthomas/kingpin.v2 v2.2.6
 gopkg.in/alecthomas/kingpin.v2
+# libvirt.org/libvirt-go v7.2.0+incompatible
+libvirt.org/libvirt-go

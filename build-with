@@ -24,4 +24,4 @@ docker run --rm \
   -v "$PWD":/libvirt-exporter -w /libvirt-exporter \
   -e GOOS=linux \
   -e GOARCH=amd64 \
-   libvirtexporterbuild:latest go build -o ${BINARY_NAME}
+   libvirtexporterbuild:latest go build -mod vendor -o ${BINARY_NAME}
