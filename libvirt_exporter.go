@@ -19,10 +19,10 @@ package main
 import (
 	"encoding/xml"
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
-	"libvirt.org/libvirt-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/alecthomas/kingpin.v2"
+	"libvirt.org/libvirt-go"
 	"log"
 	"net/http"
 	"os"
@@ -76,10 +76,10 @@ var (
 		nil)
 	libvirtDomainVcpuDelayDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_vcpu", "delay_seconds_total"),
-		"Amount of CPU time used by the domain's VCPU, in seconds."+
-    "Vcpu's delay metric. Time the vcpu thread was enqueued by the "+
-      "host scheduler, but was waiting in the queue instead of running. "+
-      "Exposed to the VM as a steal time.",
+		"Amount of CPU time used by the domain's VCPU, in seconds. "+
+			"Vcpu's delay metric. Time the vcpu thread was enqueued by the "+
+			"host scheduler, but was waiting in the queue instead of running. "+
+			"Exposed to the VM as a steal time.",
 		[]string{"domain", "vcpu"},
 		nil)
 	libvirtDomainVcpuStateDesc = prometheus.NewDesc(
