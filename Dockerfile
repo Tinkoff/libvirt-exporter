@@ -13,6 +13,6 @@ RUN apk add ca-certificates g++ git go libnl-dev linux-headers make libvirt-dev 
 WORKDIR $LIBVIRT_EXPORTER_PATH
 COPY . .
 
-RUN go build
+RUN go build -mod vendor
 
 ENTRYPOINT [ "./libvirt-exporter" ]

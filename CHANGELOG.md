@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Rename `wait` metric to `wait_seconds_total`.
-- `build-with` uses -mod vendor now.
+- `build-with` and Dockerfile use -mod vendor now.
 - Use libvirt-go v7.2.0.
 
 ## [2.0.0] - 2021-03-26
