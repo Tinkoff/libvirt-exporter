@@ -18,15 +18,17 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"libvirt.org/libvirt-go"
-	"log"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 var (
@@ -35,7 +37,11 @@ var (
 		"Whether scraping libvirt's metrics was successful.",
 		nil,
 		nil)
-
+	libvirtVersionInfoDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "", "version_info"),
+		"Versions of libvirt components",
+		[]string{"hypervisor", "library"},
+		nil)
 	libvirtDomainInfoMetaDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "meta"),
 		"Domain metadata",
@@ -667,6 +673,25 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	}
 	defer conn.Close()
 
+	qemuVersionNum, err := conn.GetVersion()
+	if err != nil {
+		return err
+	}
+	qemuVersion := fmt.Sprintf("%d.%d.%d", qemuVersionNum/1000000%10, qemuVersionNum/1000%10, qemuVersionNum%10)
+
+	libvirtVersionNum, err := conn.GetLibVersion()
+	if err != nil {
+		return err
+	}
+	libvirtVersion := fmt.Sprintf("%d.%d.%d", libvirtVersionNum/1000000%10, libvirtVersionNum/1000%10, libvirtVersionNum%10)
+
+	ch <- prometheus.MustNewConstMetric(
+		libvirtVersionInfoDesc,
+		prometheus.GaugeValue,
+		1.0,
+		qemuVersion,
+		libvirtVersion)
+
 	stats, err := conn.GetAllDomainStats([]*libvirt.Domain{}, libvirt.DOMAIN_STATS_STATE|libvirt.DOMAIN_STATS_CPU_TOTAL|
 		libvirt.DOMAIN_STATS_INTERFACE|libvirt.DOMAIN_STATS_BALLOON|libvirt.DOMAIN_STATS_BLOCK|
 		libvirt.DOMAIN_STATS_PERF|libvirt.DOMAIN_STATS_VCPU,
@@ -728,8 +753,9 @@ func NewLibvirtExporter(uri string) (*LibvirtExporter, error) {
 
 // Describe returns metadata for all Prometheus metrics that may be exported.
 func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
-	// Status
+	// Status and versions
 	ch <- libvirtUpDesc
+	ch <- libvirtVersionInfoDesc
 
 	// Domain info
 	ch <- libvirtDomainInfoMetaDesc
