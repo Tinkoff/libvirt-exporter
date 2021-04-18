@@ -677,13 +677,13 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	if err != nil {
 		return err
 	}
-	qemuVersion := fmt.Sprintf("%d.%d.%d", qemuVersionNum/1000000%10, qemuVersionNum/1000%10, qemuVersionNum%10)
+	qemuVersion := fmt.Sprintf("%d.%d.%d", qemuVersionNum/1000000%1000, qemuVersionNum/1000%1000, qemuVersionNum%1000)
 
 	libvirtVersionNum, err := conn.GetLibVersion()
 	if err != nil {
 		return err
 	}
-	libvirtVersion := fmt.Sprintf("%d.%d.%d", libvirtVersionNum/1000000%10, libvirtVersionNum/1000%10, libvirtVersionNum%10)
+	libvirtVersion := fmt.Sprintf("%d.%d.%d", libvirtVersionNum/1000000%1000, libvirtVersionNum/1000%1000, libvirtVersionNum%1000)
 
 	ch <- prometheus.MustNewConstMetric(
 		libvirtVersionInfoDesc,
