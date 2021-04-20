@@ -362,7 +362,19 @@ var (
 		"The amount of memory in percent, that used by domain.",
 		[]string{"domain"},
 		nil)
+
+	errorsMap map[string]struct{}
 )
+
+// Write message to stdout only once for the concrete error
+// "err" - an error message
+// "name" - name of an error, to count it
+func WriteErrorOnce(err string, name string) {
+	if _, ok := errorsMap[name]; !ok {
+		log.Printf("%s", err)
+		errorsMap[name] = struct{}{}
+	}
+}
 
 // CollectDomain extracts Prometheus metrics from a libvirt domain.
 func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error {
@@ -617,161 +629,170 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 		blockIOTuneParams, err := stat.Domain.GetBlockIoTune(disk.Name, 0)
 		if err != nil {
 			lverr, ok := err.(libvirt.Error)
-			if !ok || lverr.Code != libvirt.ERR_OPERATION_INVALID {
-				return err
+			if !ok {
+				switch lverr.Code {
+				case libvirt.ERR_OPERATION_INVALID:
+					// This should be one-shot error
+					log.Printf("Invalid operation GetBlockIoTune: %s", err.Error())
+				case libvirt.ERR_OPERATION_UNSUPPORTED:
+					WriteErrorOnce("Unsupported operation GetBlockIoTune: "+err.Error(), "blkiotune_unsupported")
+				default:
+					return err
+				}
 			}
-		}
-		if blockIOTuneParams.TotalBytesSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalBytesSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalBytesSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadBytesSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadBytesSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadBytesSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteBytesSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteBytesSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteBytesSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.TotalIopsSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalIopsSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalIopsSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadIopsSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadIopsSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadIopsSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteIopsSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteIopsSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteIopsSec),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.TotalBytesSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalBytesSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalBytesSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadBytesSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadBytesSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadBytesSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteBytesSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteBytesSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteBytesSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.TotalIopsSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalIopsSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalIopsSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadIopsSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadIopsSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadIopsSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteIopsSecMaxSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteIopsSecMaxDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteIopsSecMax),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.TotalBytesSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalBytesSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalBytesSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadBytesSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadBytesSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadBytesSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteBytesSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteBytesSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteBytesSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.TotalIopsSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockTotalIopsSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.TotalIopsSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.ReadIopsSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockReadIopsSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.ReadIopsSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.WriteIopsSecMaxLengthSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockWriteIopsSecMaxLengthDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.WriteIopsSecMaxLength),
-				domainName,
-				disk.Name)
-		}
-		if blockIOTuneParams.SizeIopsSecSet {
-			ch <- prometheus.MustNewConstMetric(
-				libvirtDomainBlockSizeIopsSecDesc,
-				prometheus.GaugeValue,
-				float64(blockIOTuneParams.SizeIopsSec),
-				domainName,
-				disk.Name)
+		} else {
+			if blockIOTuneParams.TotalBytesSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalBytesSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalBytesSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadBytesSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadBytesSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadBytesSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteBytesSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteBytesSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteBytesSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.TotalIopsSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalIopsSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalIopsSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadIopsSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadIopsSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadIopsSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteIopsSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteIopsSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteIopsSec),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.TotalBytesSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalBytesSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalBytesSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadBytesSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadBytesSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadBytesSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteBytesSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteBytesSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteBytesSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.TotalIopsSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalIopsSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalIopsSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadIopsSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadIopsSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadIopsSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteIopsSecMaxSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteIopsSecMaxDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteIopsSecMax),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.TotalBytesSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalBytesSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalBytesSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadBytesSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadBytesSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadBytesSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteBytesSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteBytesSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteBytesSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.TotalIopsSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockTotalIopsSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.TotalIopsSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.ReadIopsSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockReadIopsSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.ReadIopsSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.WriteIopsSecMaxLengthSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockWriteIopsSecMaxLengthDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.WriteIopsSecMaxLength),
+					domainName,
+					disk.Name)
+			}
+			if blockIOTuneParams.SizeIopsSecSet {
+				ch <- prometheus.MustNewConstMetric(
+					libvirtDomainBlockSizeIopsSecDesc,
+					prometheus.GaugeValue,
+					float64(blockIOTuneParams.SizeIopsSec),
+					domainName,
+					disk.Name)
+			}
 		}
 	}
 
@@ -1099,6 +1120,7 @@ func main() {
 		libvirtURI    = app.Flag("libvirt.uri", "Libvirt URI from which to extract metrics.").Default("qemu:///system").String()
 	)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+	errorsMap = make(map[string]struct{})
 
 	exporter, err := NewLibvirtExporter(*libvirtURI)
 	if err != nil {
