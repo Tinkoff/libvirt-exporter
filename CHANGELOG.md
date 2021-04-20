@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2021-04-21
+### Added
+- Add libvirt_versions_info metric.
+
 ## [2.1.0] - 2021-04-12
 ### Added
 - Add delay time metric. Exposed to vm as a steal time.
