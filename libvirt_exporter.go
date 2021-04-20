@@ -37,10 +37,10 @@ var (
 		"Whether scraping libvirt's metrics was successful.",
 		nil,
 		nil)
-	libvirtVersionInfoDesc = prometheus.NewDesc(
-		prometheus.BuildFQName("libvirt", "", "version_info"),
-		"Versions of libvirt components",
-		[]string{"hypervisor", "library"},
+	libvirtVersionsInfoDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "", "versions_info"),
+		"Versions of virtualization components",
+		[]string{"hypervisor_running_version", "libvirtd_running_version", "library_version"},
 		nil)
 	libvirtDomainInfoMetaDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "meta"),
@@ -673,24 +673,31 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	}
 	defer conn.Close()
 
-	qemuVersionNum, err := conn.GetVersion()
+	hypervisorVersionNum, err := conn.GetVersion() // virConnectGetVersion, hypervisor running, e.g. QEMU
 	if err != nil {
 		return err
 	}
-	qemuVersion := fmt.Sprintf("%d.%d.%d", qemuVersionNum/1000000%1000, qemuVersionNum/1000%1000, qemuVersionNum%1000)
+	hypervisorVersion := fmt.Sprintf("%d.%d.%d", hypervisorVersionNum/1000000%1000, hypervisorVersionNum/1000%1000, hypervisorVersionNum%1000)
 
-	libvirtVersionNum, err := conn.GetLibVersion()
+	libvirtdVersionNum, err := conn.GetLibVersion() // virConnectGetLibVersion, libvirt daemon running
 	if err != nil {
 		return err
 	}
-	libvirtVersion := fmt.Sprintf("%d.%d.%d", libvirtVersionNum/1000000%1000, libvirtVersionNum/1000%1000, libvirtVersionNum%1000)
+	libvirtdVersion := fmt.Sprintf("%d.%d.%d", libvirtdVersionNum/1000000%1000, libvirtdVersionNum/1000%1000, libvirtdVersionNum%1000)
+
+	libraryVersionNum, err := libvirt.GetVersion() // virGetVersion, version of library, i.e. libvirt library used here, not the daemon
+	if err != nil {
+		return err
+	}
+	libraryVersion := fmt.Sprintf("%d.%d.%d", libraryVersionNum/1000000%1000, libraryVersionNum/1000%1000, libraryVersionNum%1000)
 
 	ch <- prometheus.MustNewConstMetric(
-		libvirtVersionInfoDesc,
+		libvirtVersionsInfoDesc,
 		prometheus.GaugeValue,
 		1.0,
-		qemuVersion,
-		libvirtVersion)
+		hypervisorVersion,
+		libvirtdVersion,
+		libraryVersion)
 
 	stats, err := conn.GetAllDomainStats([]*libvirt.Domain{}, libvirt.DOMAIN_STATS_STATE|libvirt.DOMAIN_STATS_CPU_TOTAL|
 		libvirt.DOMAIN_STATS_INTERFACE|libvirt.DOMAIN_STATS_BALLOON|libvirt.DOMAIN_STATS_BLOCK|
@@ -755,7 +762,7 @@ func NewLibvirtExporter(uri string) (*LibvirtExporter, error) {
 func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	// Status and versions
 	ch <- libvirtUpDesc
-	ch <- libvirtVersionInfoDesc
+	ch <- libvirtVersionsInfoDesc
 
 	// Domain info
 	ch <- libvirtDomainInfoMetaDesc
