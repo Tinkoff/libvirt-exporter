@@ -40,7 +40,7 @@ var (
 	libvirtVersionsInfoDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "", "versions_info"),
 		"Versions of virtualization components",
-		[]string{"hypervisor_running_version", "libvirtd_running_version", "library_version"},
+		[]string{"hypervisor_running", "libvirtd_running", "libvirt_library"},
 		nil)
 	libvirtDomainInfoMetaDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "meta"),
@@ -685,7 +685,7 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	}
 	libvirtdVersion := fmt.Sprintf("%d.%d.%d", libvirtdVersionNum/1000000%1000, libvirtdVersionNum/1000%1000, libvirtdVersionNum%1000)
 
-	libraryVersionNum, err := libvirt.GetVersion() // virGetVersion, version of library, i.e. libvirt library used here, not the daemon
+	libraryVersionNum, err := libvirt.GetVersion() // virGetVersion, version of libvirt (dynamic) library used by this binary (exporter), not the daemon version
 	if err != nil {
 		return err
 	}
