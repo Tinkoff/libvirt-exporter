@@ -18,15 +18,17 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/AlexZzz/libvirt-exporter/libvirtSchema"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"libvirt.org/libvirt-go"
-	"log"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 var (
@@ -35,7 +37,11 @@ var (
 		"Whether scraping libvirt's metrics was successful.",
 		nil,
 		nil)
-
+	libvirtVersionsInfoDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "", "versions_info"),
+		"Versions of virtualization components",
+		[]string{"hypervisor_running", "libvirtd_running", "libvirt_library"},
+		nil)
 	libvirtDomainInfoMetaDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "meta"),
 		"Domain metadata",
@@ -667,6 +673,32 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	}
 	defer conn.Close()
 
+	hypervisorVersionNum, err := conn.GetVersion() // virConnectGetVersion, hypervisor running, e.g. QEMU
+	if err != nil {
+		return err
+	}
+	hypervisorVersion := fmt.Sprintf("%d.%d.%d", hypervisorVersionNum/1000000%1000, hypervisorVersionNum/1000%1000, hypervisorVersionNum%1000)
+
+	libvirtdVersionNum, err := conn.GetLibVersion() // virConnectGetLibVersion, libvirt daemon running
+	if err != nil {
+		return err
+	}
+	libvirtdVersion := fmt.Sprintf("%d.%d.%d", libvirtdVersionNum/1000000%1000, libvirtdVersionNum/1000%1000, libvirtdVersionNum%1000)
+
+	libraryVersionNum, err := libvirt.GetVersion() // virGetVersion, version of libvirt (dynamic) library used by this binary (exporter), not the daemon version
+	if err != nil {
+		return err
+	}
+	libraryVersion := fmt.Sprintf("%d.%d.%d", libraryVersionNum/1000000%1000, libraryVersionNum/1000%1000, libraryVersionNum%1000)
+
+	ch <- prometheus.MustNewConstMetric(
+		libvirtVersionsInfoDesc,
+		prometheus.GaugeValue,
+		1.0,
+		hypervisorVersion,
+		libvirtdVersion,
+		libraryVersion)
+
 	stats, err := conn.GetAllDomainStats([]*libvirt.Domain{}, libvirt.DOMAIN_STATS_STATE|libvirt.DOMAIN_STATS_CPU_TOTAL|
 		libvirt.DOMAIN_STATS_INTERFACE|libvirt.DOMAIN_STATS_BALLOON|libvirt.DOMAIN_STATS_BLOCK|
 		libvirt.DOMAIN_STATS_PERF|libvirt.DOMAIN_STATS_VCPU,
@@ -728,8 +760,9 @@ func NewLibvirtExporter(uri string) (*LibvirtExporter, error) {
 
 // Describe returns metadata for all Prometheus metrics that may be exported.
 func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
-	// Status
+	// Status and versions
 	ch <- libvirtUpDesc
+	ch <- libvirtVersionsInfoDesc
 
 	// Domain info
 	ch <- libvirtDomainInfoMetaDesc

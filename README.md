@@ -47,6 +47,7 @@ libvirt_domain_memory_stats_unused_bytes{domain="..."}
 libvirt_domain_memory_stats_usable_bytes{domain="..."}
 libvirt_domain_memory_stats_used_percent{domain="..."}
 
+libvirt_versions_info{hypervisor_running="...",libvirtd_running="...",libvirt_library="..."}
 libvirt_up
 ```
 
