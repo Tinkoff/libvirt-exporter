@@ -66,7 +66,7 @@ disk and network usage. By default, this exporter listens on TCP port
 9177.
 
 This exporter makes use of
-[libvirt-go](https://github.com/libvirt/libvirt-go), the official Go
+[libvirt-go](https://gitlab.com/libvirt/libvirt-go-module), the official Go
 bindings for libvirt. This exporter make use of the
 `GetAllDomainStats()`
 
