@@ -26,5 +26,5 @@ github.com/prometheus/procfs/internal/fs
 golang.org/x/sys/windows
 # gopkg.in/alecthomas/kingpin.v2 v2.2.6
 gopkg.in/alecthomas/kingpin.v2
-# libvirt.org/libvirt-go v7.2.0+incompatible
-libvirt.org/libvirt-go
+# libvirt.org/go/libvirt v1.7005.0
+libvirt.org/go/libvirt
