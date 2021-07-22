@@ -502,7 +502,9 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 	for _, disk := range stat.Block {
 		var DiskSource string
 		var Device *libvirtSchema.Disk
-		if disk.Name == "hdc" {
+		// Ugly hack to avoid getting metrics from cdrom block device
+		// TODO: somehow check the disk 'device' field for 'cdrom' string
+		if disk.Name == "hdc" || disk.Name == "hda" {
 			continue
 		}
 		/*  "block.<num>.path" - string describing the source of block device <num>,
