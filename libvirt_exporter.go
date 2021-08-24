@@ -166,6 +166,28 @@ var (
 		[]string{"domain", "target_device"},
 		nil)
 
+	// Storage pools info
+	libvirtStoragePoolStateDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "storage_pool_info", "state"),
+		"Storage pool state flag",
+		[]string{"pool"},
+		nil)
+	libvirtStoragePoolCapacityBytesDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "storage_pool_info", "capacity_bytes"),
+		"Logical size bytes",
+		[]string{"pool"},
+		nil)
+	libvirtStoragePoolAllocationBytesDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "storage_pool_info", "allocation_bytes"),
+		"Current allocation bytes",
+		[]string{"pool"},
+		nil)
+	libvirtStoragePoolAvailableBytesDesc = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "storage_pool_info", "available_bytes"),
+		"Remaining free space bytes",
+		[]string{"pool"},
+		nil)
+
 	// Block IO tune parameters
 	// Limits
 	libvirtDomainBlockTotalBytesSecDesc = prometheus.NewDesc(
@@ -375,6 +397,31 @@ func WriteErrorOnce(err string, name string) {
 		log.Printf("%s", err)
 		errorsMap[name] = struct{}{}
 	}
+}
+
+// CollectStoragePool extracts metrics from storage pools
+func CollectStoragePool(ch chan<- prometheus.Metric, name string, info libvirt.StoragePoolInfo) error {
+	ch <- prometheus.MustNewConstMetric(
+		libvirtStoragePoolStateDesc,
+		prometheus.GaugeValue,
+		float64(info.State),
+		name)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtStoragePoolCapacityBytesDesc,
+		prometheus.GaugeValue,
+		float64(info.Capacity),
+		name)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtStoragePoolAllocationBytesDesc,
+		prometheus.GaugeValue,
+		float64(info.Allocation),
+		name)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtStoragePoolAvailableBytesDesc,
+		prometheus.GaugeValue,
+		float64(info.Available),
+		name)
+	return nil
 }
 
 // CollectDomain extracts Prometheus metrics from a libvirt domain.
@@ -998,7 +1045,28 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 	for _, stat := range stats {
 		err = CollectDomain(ch, stat)
 		if err != nil {
-			log.Printf("Failed to scrape metrics: %s", err)
+			log.Printf("Failed to scrape domain metrics: %s", err)
+		}
+	}
+	poolNames, err := conn.ListStoragePools()
+	if err != nil {
+		log.Printf("Failed to list storage pools: %s", err)
+	} else {
+		for _, pool := range poolNames {
+			p, err := conn.LookupStoragePoolByName(pool)
+			if err != nil {
+				log.Printf("Failed to get storage pool '%s' by name: %s", pool, err)
+				continue
+			}
+			info, err := p.GetInfo()
+			if err != nil {
+				log.Printf("Failed to get storage pool '%s' info: %s", pool, err)
+			} else {
+				err = CollectStoragePool(ch, pool, *info)
+				if err != nil {
+					log.Printf("Failed to scrape storage pool metrics: %s", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -1062,6 +1130,10 @@ func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- libvirtDomainVcpuCPUDesc
 	ch <- libvirtDomainVcpuWaitDesc
 
+	ch <- libvirtStoragePoolStateDesc
+	ch <- libvirtStoragePoolCapacityBytesDesc
+	ch <- libvirtStoragePoolAllocationBytesDesc
+	ch <- libvirtStoragePoolAvailableBytesDesc
 	// Domain block stats
 	ch <- libvirtDomainMetaBlockDesc
 	ch <- libvirtDomainBlockRdBytesDesc
