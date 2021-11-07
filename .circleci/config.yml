@@ -8,8 +8,7 @@ jobs:
       - run: sudo pip install codespell
       - run: codespell --skip=vendor,.git -Luint,hda
   test:
-    docker:
-      - image: docker
+    machine: true
     steps:
       - checkout
       - run: docker run --rm -v $(pwd):/data cytopia/golint
@@ -18,6 +17,9 @@ jobs:
       - image: docker
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
       - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run:
           name: Build container
