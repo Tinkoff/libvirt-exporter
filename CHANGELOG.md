@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add per-vcpu stats: cpu number, time running and state.
 
 ### Changed
-- Temprorarily fixed `build_static.sh`. [11](https://github.com/AlexZzz/libvirt-exporter/issues/11)
+- Temporarily fixed `build_static.sh`. [11](https://github.com/AlexZzz/libvirt-exporter/issues/11)
 - Fix docker image build. Add libvirt patch to include `path.h` if `_PATH_MOUNTED` is not definedi. By [@stress-t](https://github.com/stress-t)
 - Fix potential domain leak.
 - Fix `libvirt_domain_interface_meta` if ther's no bridge or virtual interface. Just don't collect it. By [@bswinnerton](https://github.com/bswinnerton)
@@ -65,6 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Fix stuck when collecting metrics from paused domains with lock on resources. It's better to use CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT, but it only works with modern libvirt versions. Just collect metrics for active and shutoff vm's. By [@clickfreak](https://github.com/clickfreak).
-- Use standart recomended base units and rename metric names by [@clickfreak](https://github.com/clickfreak).
+- Use standard recommended base units and rename metric names by [@clickfreak](https://github.com/clickfreak).
 - Refactor of buildindocker.sh and Dockerbuildimage.
 
