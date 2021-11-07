@@ -36,6 +36,9 @@ workflows:
       - codespell
       - test
       - deploy:
+          requires:
+            - codespell
+            - test
           filters:
             tags:
               only: /.*/
