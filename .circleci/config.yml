@@ -1,0 +1,41 @@
+version: 2.1
+jobs:
+  codespell:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: sudo pip install codespell
+      - run: codespell --skip=vendor,.git -Luint
+  test:
+    docker:
+      - image: docker
+    steps:
+      - checkout
+      - run: docker run --rm -v $(pwd):/data cytopia/golint
+  deploy:
+    docker:
+      - image: docker
+    steps:
+      - checkout
+      - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - run:
+          name: Build container
+          command: docker build . -t libvirt-exporter
+      - run:
+          name: Publish
+          command: |
+            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+            docker tag libvirt-exporter:latest
+            docker tag libvirt-exporter:${{ env.RELEASE_VERSION }}
+            docker push --all-tags
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - codespell
+      - test
+      - deploy:
+          filters:
+            tags:
+              only: /.*/
