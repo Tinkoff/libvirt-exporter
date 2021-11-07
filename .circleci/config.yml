@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install codespell
-      - run: codespell --skip=vendor,.git -Luint
+      - run: codespell --skip=vendor,.git -Luint,hda
   test:
     docker:
       - image: docker
