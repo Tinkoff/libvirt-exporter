@@ -43,4 +43,4 @@ workflows:
             - test
           filters:
             tags:
-              only: /.*/
+              only: /^\d+\.\d+\.\d+$/
