@@ -12,7 +12,20 @@ jobs:
     steps:
       - checkout
       - run: docker run --rm -v $(pwd):/data cytopia/golint .
-  deploy:
+  build_test:
+    docker:
+      - image: docker
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+          docker_layer_caching: true
+      - run:
+          name: Build container
+          command: |
+            RELEASE_VERSION=$(git describe --tags)
+            docker build . alekseizakharov/libvirt-exporter:${RELEASE_VERSION}
+  build_and_deploy:
     docker:
       - image: docker:git
     steps:
@@ -36,12 +49,19 @@ workflows:
     jobs:
       - codespell
       - test
+      - build_test:
+          requires:
+            - codespell
+            - test
+          filters:
+            tags:
+              ignore: /.*/
       - approve:
           type: approval
           requires:
             - codespell
             - test
-      - deploy:
+      - build_and_deploy:
           context:
             - dockerhub
           requires:
@@ -49,3 +69,5 @@ workflows:
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
