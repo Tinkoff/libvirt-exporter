@@ -20,7 +20,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
-      - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $BASH_ENV
       - run:
           name: Build container
           command: docker build . -t libvirt-exporter
