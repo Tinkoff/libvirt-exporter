@@ -11,7 +11,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: docker run --rm -v $(pwd):/data cytopia/golint
+      - run: docker run --rm -v $(pwd):/data cytopia/golint .
   deploy:
     docker:
       - image: docker
