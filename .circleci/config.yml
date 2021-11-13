@@ -14,7 +14,7 @@ jobs:
       - run: docker run --rm -v $(pwd):/data cytopia/golint .
   deploy:
     docker:
-      - image: docker
+      - image: git
     steps:
       - checkout
       - setup_remote_docker:
@@ -36,12 +36,16 @@ workflows:
     jobs:
       - codespell
       - test
+      - approve:
+          type: approval
+          requires:
+            - codespell
+            - test
       - deploy:
           context:
             - dockerhub
           requires:
-            - codespell
-            - test
+            - approve
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
