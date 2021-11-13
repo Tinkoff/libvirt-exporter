@@ -367,7 +367,8 @@ var (
 	errorsMap map[string]struct{}
 )
 
-// Write message to stdout only once for the concrete error
+// WriteErrorOnce writes message to stdout only once
+// for the error
 // "err" - an error message
 // "name" - name of an error, to count it
 func WriteErrorOnce(err string, name string) {

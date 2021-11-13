@@ -1,0 +1,73 @@
+version: 2.1
+jobs:
+  codespell:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: sudo pip install codespell
+      - run: codespell --skip=vendor,.git -Luint,hda
+  test:
+    machine: true
+    steps:
+      - checkout
+      - run: docker run --rm -v $(pwd):/data cytopia/golint .
+  build_test:
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+          docker_layer_caching: true
+      - run:
+          name: Build container
+          command: |
+            RELEASE_VERSION=$(git describe --tags)
+            docker build . -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION}
+  build_and_deploy:
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+          docker_layer_caching: true
+      - run:
+          name: Build container
+          command: |
+            RELEASE_VERSION=$(git describe --tags --abbrev=0)
+            docker build . -t alekseizakharov/libvirt-exporter:latest -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION}
+      - run:
+          name: Publish
+          command: |
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker image push --all-tags alekseizakharov/libvirt-exporter
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - codespell
+      - test
+      - build_test:
+          requires:
+            - codespell
+            - test
+          filters:
+            tags:
+              ignore: /.*/
+      - approve:
+          type: approval
+          requires:
+            - codespell
+            - test
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
+      - build_and_deploy:
+          context:
+            - dockerhub
+          requires:
+            - approve
