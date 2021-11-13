@@ -47,11 +47,11 @@ jobs:
 workflows:
   test-and-deploy:
     jobs:
-      - codespell
+      - codespell:
           filters:
             tags:
               only: /.*/
-      - test
+      - test:
           filters:
             tags:
               only: /.*/
