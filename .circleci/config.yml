@@ -38,6 +38,8 @@ workflows:
       - codespell
       - test
       - deploy:
+          context:
+            - dockerhub
           requires:
             - codespell
             - test
