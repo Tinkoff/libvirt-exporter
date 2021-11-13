@@ -48,7 +48,13 @@ workflows:
   test-and-deploy:
     jobs:
       - codespell
+          filters:
+            tags:
+              only: /.*/
       - test
+          filters:
+            tags:
+              only: /.*/
       - build_test:
           requires:
             - codespell
