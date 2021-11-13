@@ -74,3 +74,8 @@ workflows:
             - dockerhub
           requires:
             - approve
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
