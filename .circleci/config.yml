@@ -23,14 +23,12 @@ jobs:
       - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $BASH_ENV
       - run:
           name: Build container
-          command: docker build . -t libvirt-exporter
+          command: docker build . -t libvirt-exporter:latest -t libvirt-exporter:${RELEASE_VERSION}
       - run:
           name: Publish
           command: |
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker tag libvirt-exporter libvirt-exporter:latest
-            docker tag libvirt-exporter libvirt-exporter:${{ env.RELEASE_VERSION }}
-            docker push --all-tags
+            docker image push --all-tags alekseizakharov/libvirt-exporter
 
 workflows:
   test-and-deploy:
