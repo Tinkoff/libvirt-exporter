@@ -61,13 +61,13 @@ workflows:
           requires:
             - codespell
             - test
-      - build_and_deploy:
-          context:
-            - dockerhub
-          requires:
-            - approve
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
+      - build_and_deploy:
+          context:
+            - dockerhub
+          requires:
+            - approve
