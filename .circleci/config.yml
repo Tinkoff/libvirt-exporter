@@ -27,9 +27,9 @@ jobs:
       - run:
           name: Publish
           command: |
-            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-            docker tag libvirt-exporter:latest
-            docker tag libvirt-exporter:${{ env.RELEASE_VERSION }}
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker tag libvirt-exporter libvirt-exporter:latest
+            docker tag libvirt-exporter libvirt-exporter:${{ env.RELEASE_VERSION }}
             docker push --all-tags
 
 workflows:
