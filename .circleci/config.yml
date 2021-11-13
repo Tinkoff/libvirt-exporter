@@ -20,10 +20,11 @@ jobs:
       - setup_remote_docker:
           version: 20.10.7
           docker_layer_caching: true
-      - run: echo "RELEASE_VERSION=$(git described --tags --abbrev=0)" >> $BASH_ENV
       - run:
           name: Build container
-          command: docker build . -t libvirt-exporter:latest -t libvirt-exporter:${RELEASE_VERSION}
+          command: |
+            RELEASE_VERSION=$(git described --tags --abbrev=0)
+            docker build . -t libvirt-exporter:latest -t libvirt-exporter:${RELEASE_VERSION}
       - run:
           name: Publish
           command: |
