@@ -53,9 +53,6 @@ workflows:
           requires:
             - codespell
             - test
-          filters:
-            tags:
-              ignore: /.*/
       - approve:
           type: approval
           requires:
