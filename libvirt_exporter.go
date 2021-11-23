@@ -38,6 +38,21 @@ var (
 		"Whether scraping libvirt's metrics was successful.",
 		nil,
 		nil)
+	libvirtPoolInfoCapacity = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "pool_info", "capacity_bytes"),
+		"Pool capacity, in bytes",
+		[]string{"pool"},
+		nil)
+	libvirtPoolInfoAllocation = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "pool_info", "allocation_bytes"),
+		"Pool allocation, in bytes",
+		[]string{"pool"},
+		nil)
+	libvirtPoolInfoAvailable = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "pool_info", "available_bytes"),
+		"Pool available, in bytes",
+		[]string{"pool"},
+		nil)
 	libvirtVersionsInfoDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "", "versions_info"),
 		"Versions of virtualization components",
@@ -948,10 +963,44 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 	return nil
 }
 
+// Collect Storage pool stats
+func CollectStoragePool(ch chan<- prometheus.Metric, pool libvirt.StoragePool) error {
+	// Refresh pool
+	err := pool.Refresh(0)
+	if err != nil {
+		return err
+	}
+	pool_name, err := pool.GetName()
+	if err != nil {
+		return err
+	}
+	pool_info, err := pool.GetInfo()
+	if err != nil {
+		return err
+	}
+	// Send metrics to channel
+	ch <- prometheus.MustNewConstMetric(
+		libvirtPoolInfoCapacity,
+		prometheus.GaugeValue,
+		float64(pool_info.Capacity),
+		pool_name)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtPoolInfoAllocation,
+		prometheus.GaugeValue,
+		float64(pool_info.Allocation),
+		pool_name)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtPoolInfoAvailable,
+		prometheus.GaugeValue,
+		float64(pool_info.Available),
+		pool_name)
+	return nil
+}
+
 // CollectFromLibvirt obtains Prometheus metrics from all domains in a
 // libvirt setup.
 func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
-	conn, err := libvirt.NewConnectReadOnly(uri)
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}
@@ -1002,6 +1051,19 @@ func CollectFromLibvirt(ch chan<- prometheus.Metric, uri string) error {
 			log.Printf("Failed to scrape metrics: %s", err)
 		}
 	}
+
+	// Collect pool info
+	pools, err := conn.ListAllStoragePools(libvirt.CONNECT_LIST_STORAGE_POOLS_ACTIVE)
+	if err != nil {
+		return err
+	}
+	for _, pool := range pools {
+		err = CollectStoragePool(ch, pool)
+		pool.Free()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -1047,6 +1109,11 @@ func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	// Status and versions
 	ch <- libvirtUpDesc
 	ch <- libvirtVersionsInfoDesc
+
+	// Pool info
+	ch <- libvirtPoolInfoCapacity
+	ch <- libvirtPoolInfoAllocation
+	ch <- libvirtPoolInfoAvailable
 
 	// Domain info
 	ch <- libvirtDomainInfoMetaDesc
