@@ -41,6 +41,10 @@ libvirt_domain_block_stats_write_bytes_total{domain="instance-00000337",target_d
 libvirt_domain_block_stats_write_requests_total{domain="instance-00000337",target_device="sda"} 2.8434899e+07
 libvirt_domain_block_stats_write_time_seconds_total{domain="instance-00000337",target_device="sda"} 530522.437009019
 
+libvirt_pool_info_allocation_bytes{pool="default"} 5.4276182016e+10
+libvirt_pool_info_available_bytes{pool="default"} 5.1278647296e+10
+libvirt_pool_info_capacity_bytes{pool="default"} 1.05554829312e+11
+
 libvirt_domain_info_cpu_time_seconds_total{domain="instance-00000337"} 949422.12
 libvirt_domain_info_maximum_memory_bytes{domain="instance-00000337"} 8.589934592e+09
 libvirt_domain_info_memory_usage_bytes{domain="instance-00000337"} 8.589934592e+09
