@@ -24,7 +24,7 @@ jobs:
           name: Build container
           command: |
             RELEASE_VERSION=$(git describe --tags)
-            docker build . -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION}
+            docker build . -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION} --build-arg VERSION=${RELEASE_VERSION}
   build_and_deploy:
     docker:
       - image: docker:git
@@ -37,7 +37,7 @@ jobs:
           name: Build container
           command: |
             RELEASE_VERSION=$(git describe --tags --abbrev=0)
-            docker build . -t alekseizakharov/libvirt-exporter:latest -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION}
+            docker build . -t alekseizakharov/libvirt-exporter:latest -t alekseizakharov/libvirt-exporter:${RELEASE_VERSION} --build-arg VERSION=${RELEASE_VERSION}
       - run:
           name: Publish
           command: |

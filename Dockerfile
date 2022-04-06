@@ -1,5 +1,8 @@
 FROM golang:1.17.3-alpine3.15 AS build
 
+ARG VERSION
+ENV VERSION=${VERSION:-development}
+
 ENV LIBVIRT_EXPORTER_PATH=/libvirt-exporter
 ENV LIBXML2_VER=2.9.12
 
@@ -14,7 +17,7 @@ RUN apk add ca-certificates g++ git libnl-dev linux-headers make libvirt-dev lib
 WORKDIR $LIBVIRT_EXPORTER_PATH
 COPY . .
 
-RUN go build -mod vendor
+RUN go build -ldflags="-X 'main.Version=${VERSION}'" -mod vendor
 
 FROM alpine:3.15
 RUN apk add ca-certificates libvirt

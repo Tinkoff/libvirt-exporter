@@ -33,6 +33,8 @@ import (
 )
 
 var (
+	Version = ""
+
 	libvirtUpDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "", "up"),
 		"Whether scraping libvirt's metrics was successful.",
@@ -1190,6 +1192,7 @@ func main() {
 		metricsPath   = app.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").String()
 		libvirtURI    = app.Flag("libvirt.uri", "Libvirt URI from which to extract metrics.").Default("qemu:///system").String()
 	)
+	app.Version(Version)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 	errorsMap = make(map[string]struct{})
 
