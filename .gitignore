@@ -1,3 +1,4 @@
 .idea
 /libvirt_exporter
 libvirt-exporter
+.venv
