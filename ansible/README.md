@@ -39,9 +39,9 @@ Contribute
 All tests located in verify playbook inside molecule tree. You can use variable ```libvirt_exporter_metrics``` to querry specific metrics and their values. Example:
 
 ```yaml
-    - name: Assert that 'libvirt_up 1' in metrics
+    - name: Assert that 'libvirt_up' in metrics
       assert:
-        that: "'libvirt_up 1' in libvirt_exporter_metrics"
+        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_up') | first"
 ```
 
-In this example, we use assert ansible module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/assert_module.html) to verify that string ```libvirt_up 1``` is present in libvirt-exporter response.
+In this example, we use assert ansible module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/assert_module.html) to verify that there is a element in ```libvirt_exporter_metrics``` array with property ```name``` equals to  ```libvirt_up```. ```libvirt_exporter_metrics``` array is a parsed json response from libvirt-exporter.
