@@ -1,0 +1,52 @@
+---
+
+- name: Verify
+  hosts: all
+  become: True
+  gather_facts: True
+  vars:
+    libvirt_exporter_url: "http://localhost:9177/metrics"
+  tasks:
+    - name: Assert that libvirt_exporter is serving
+      uri:
+        url: "{{ libvirt_exporter_url }}"
+        status_code: 200
+
+    - name: Get /metrics content from libvirt_eporter
+      command: "prom2json {{ libvirt_exporter_url }}"
+      register: libvirt_exporter_response
+
+    - name: Prettify libvirt_exporter_result
+      set_fact:
+        libvirt_exporter_metrics: "{{ libvirt_exporter_response.stdout | from_json }}"
+
+    - name: Assert that 'libvirt_up' in metrics
+      assert:
+        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_up') | first"
+
+    - name: Assert that libvirt_up metric has necessary type
+      vars:
+        libvirt_up_metric: "{{ libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_up') | first }}"
+      block:
+        - name: Assert that libvirt_up metric has necessary type
+          assert:
+            that: "libvirt_up_metric.type == 'GAUGE'"
+
+    - name: Assert that 'libvirt_domain_block_meta' in metrics
+      assert:
+        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_domain_block_meta') | first"
+
+    - name: Assert that libvirt_domain_block_meta metric has necessary attributes
+      vars:
+        libvirt_domain_block_meta: "{{ libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_domain_block_meta') | first }}"
+        libvirt_domain_block_meta_metrics: "{{ libvirt_domain_block_meta.metrics | first }}"
+      block:
+        - name: Assert that libvirt_domain_block_meta metric has necessary type
+          assert:
+            that: "libvirt_domain_block_meta.type == 'GAUGE'"
+        - name: Assert libvirt_domain_block_meta labels
+          assert:
+            that: |
+              (libvirt_domain_block_meta_metrics.labels.bus == 'virtio')
+              and
+              (libvirt_domain_block_meta_metrics.labels.disk_type == 'file')
