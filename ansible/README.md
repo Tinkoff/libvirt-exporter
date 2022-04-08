@@ -45,19 +45,3 @@ All tests located in verify playbook inside molecule tree. You can use variable 
 ```
 
 In this example, we use assert ansible module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/assert_module.html) to verify that string ```libvirt_up 1``` is present in libvirt-exporter response.
-
-Architecture
-============
-
-There are several main components of e2e tests:
-- environment configuration
-- source code (or artifacts) transfer to this environment
-- service execution
-- conditional checks (tests)
-
-In this realization next set of instruments were selected:
-- fusion
-- molecule + vagrant
-- ansible
-
-Fusion is convinient, local and versatile vm player. 
