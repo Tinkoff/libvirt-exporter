@@ -4,6 +4,8 @@
   hosts: all
   become: True
   gather_facts: True
+  vars_files:
+    - metrics.yml
   vars:
     libvirt_exporter_url: "http://localhost:9177/metrics"
   tasks:
@@ -20,33 +22,14 @@
       set_fact:
         libvirt_exporter_metrics: "{{ libvirt_exporter_response.stdout | from_json }}"
 
-    - name: Assert that 'libvirt_up' in metrics
+    - name: Assert that all metrics are present
       assert:
-        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_up') | first"
+        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', item.name) | length"
+      loop: "{{ metrics }}"
 
-    - name: Assert that libvirt_up metric has necessary type
+    - name: Assert that all metrics metric have necessary type
       vars:
-        libvirt_up_metric: "{{ libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_up') | first }}"
-      block:
-        - name: Assert that libvirt_up metric has necessary type
-          assert:
-            that: "libvirt_up_metric.type == 'GAUGE'"
-
-    - name: Assert that 'libvirt_domain_block_meta' in metrics
+        libvirt_up_metric: "{{ libvirt_exporter_metrics | selectattr('name', 'equalto', item.name) | first }}"
       assert:
-        that: "libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_domain_block_meta') | first"
-
-    - name: Assert that libvirt_domain_block_meta metric has necessary attributes
-      vars:
-        libvirt_domain_block_meta: "{{ libvirt_exporter_metrics | selectattr('name', 'equalto', 'libvirt_domain_block_meta') | first }}"
-        libvirt_domain_block_meta_metrics: "{{ libvirt_domain_block_meta.metrics | first }}"
-      block:
-        - name: Assert that libvirt_domain_block_meta metric has necessary type
-          assert:
-            that: "libvirt_domain_block_meta.type == 'GAUGE'"
-        - name: Assert libvirt_domain_block_meta labels
-          assert:
-            that: |
-              (libvirt_domain_block_meta_metrics.labels.bus == 'virtio')
-              and
-              (libvirt_domain_block_meta_metrics.labels.disk_type == 'file')
+        that: "libvirt_up_metric.type == item.type"
+      loop: "{{ metrics }}"

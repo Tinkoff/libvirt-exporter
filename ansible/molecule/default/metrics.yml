@@ -1,0 +1,205 @@
+---
+
+metrics:
+  - name: go_gc_duration_seconds
+    type: SUMMARY
+  - name: go_goroutines
+    type: GAUGE
+  - name: go_info
+    type: GAUGE
+  - name: go_memstats_alloc_bytes
+    type: GAUGE
+  - name: go_memstats_alloc_bytes_total
+    type: COUNTER
+  - name: go_memstats_buck_hash_sys_bytes
+    type: GAUGE
+  - name: go_memstats_frees_total
+    type: COUNTER
+  - name: go_memstats_gc_cpu_fraction
+    type: GAUGE
+  - name: go_memstats_gc_sys_bytes
+    type: GAUGE
+  - name: go_memstats_heap_alloc_bytes
+    type: GAUGE
+  - name: go_memstats_heap_idle_bytes
+    type: GAUGE
+  - name: go_memstats_heap_inuse_bytes
+    type: GAUGE
+  - name: go_memstats_heap_objects
+    type: GAUGE
+  - name: go_memstats_heap_released_bytes
+    type: GAUGE
+  - name: go_memstats_heap_sys_bytes
+    type: GAUGE
+  - name: go_memstats_last_gc_time_seconds
+    type: GAUGE
+  - name: go_memstats_lookups_total
+    type: COUNTER
+  - name: go_memstats_mallocs_total
+    type: COUNTER
+  - name: go_memstats_mcache_inuse_bytes
+    type: GAUGE
+  - name: go_memstats_mcache_sys_bytes
+    type: GAUGE
+  - name: go_memstats_mspan_inuse_bytes
+    type: GAUGE
+  - name: go_memstats_mspan_sys_bytes
+    type: GAUGE
+  - name: go_memstats_next_gc_bytes
+    type: GAUGE
+  - name: go_memstats_other_sys_bytes
+    type: GAUGE
+  - name: go_memstats_stack_inuse_bytes
+    type: GAUGE
+  - name: go_memstats_stack_sys_bytes
+    type: GAUGE
+  - name: go_memstats_sys_bytes
+    type: GAUGE
+  - name: go_threads
+    type: GAUGE
+  - name: libvirt_domain_block_meta
+    type: GAUGE
+  - name: libvirt_domain_block_stats_allocation
+    type: GAUGE
+  - name: libvirt_domain_block_stats_capacity_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_flush_requests_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_flush_time_seconds_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_limit_burst_length_read_requests_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_length_total_requests_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_length_write_requests_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_read_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_read_bytes_length_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_read_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_total_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_total_bytes_length_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_total_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_write_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_write_bytes_length_seconds
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_burst_write_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_read_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_read_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_total_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_total_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_write_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_limit_write_requests
+    type: GAUGE
+  - name: libvirt_domain_block_stats_physicalsize_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_read_bytes_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_read_requests_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_read_time_seconds_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_size_iops_bytes
+    type: GAUGE
+  - name: libvirt_domain_block_stats_write_bytes_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_write_requests_total
+    type: COUNTER
+  - name: libvirt_domain_block_stats_write_time_seconds_total
+    type: COUNTER
+  - name: libvirt_domain_info_cpu_time_seconds_total
+    type: COUNTER
+  - name: libvirt_domain_info_maximum_memory_bytes
+    type: GAUGE
+  - name: libvirt_domain_info_memory_usage_bytes
+    type: GAUGE
+  - name:  libvirt_domain_info_meta
+    type: GAUGE
+  - name: libvirt_domain_info_virtual_cpus
+    type: GAUGE
+  - name: libvirt_domain_info_vstate
+    type: GAUGE
+  - name: libvirt_domain_interface_meta
+    type: GAUGE
+  - name:  libvirt_domain_interface_stats_receive_bytes_total
+    type: COUNTER
+  - name: libvirt_domain_interface_stats_receive_drops_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_receive_errors_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_receive_packets_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_transmit_bytes_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_transmit_drops_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_transmit_errors_total
+    type: COUNTER
+  - name:  libvirt_domain_interface_stats_transmit_packets_total
+    type: COUNTER
+  - name:  libvirt_domain_memory_stats_actual_balloon_bytes
+    type: GAUGE
+  - name:  libvirt_domain_memory_stats_available_bytes
+    type: GAUGE
+  - name: libvirt_domain_memory_stats_disk_cache_bytes
+    type: GAUGE
+  - name: libvirt_domain_memory_stats_major_fault_total
+    type: COUNTER
+  - name: libvirt_domain_memory_stats_minor_fault_total
+    type: COUNTER
+  - name: libvirt_domain_memory_stats_rss_bytes
+    type: GAUGE
+  - name: libvirt_domain_memory_stats_unused_bytes
+    type: GAUGE
+  - name: libvirt_domain_memory_stats_usable_bytes
+    type: GAUGE
+  - name:  libvirt_domain_memory_stats_used_percent
+    type: GAUGE
+  - name:  libvirt_domain_vcpu_cpu
+    type: GAUGE
+  - name: libvirt_domain_vcpu_state
+    type: GAUGE
+  - name: libvirt_domain_vcpu_time_seconds_total
+    type: COUNTER
+  - name:  libvirt_domain_vcpu_wait_seconds_total
+    type: COUNTER
+  - name:  libvirt_pool_info_allocation_bytes
+    type: GAUGE
+  - name:  libvirt_pool_info_available_bytes
+    type: GAUGE
+  - name:  libvirt_pool_info_capacity_bytes
+    type: GAUGE
+  - name:  libvirt_up
+    type: GAUGE
+  - name:  libvirt_versions_info
+    type: GAUGE
+  - name: process_cpu_seconds_total
+    type: COUNTER
+  - name:  process_max_fds
+    type: GAUGE
+  - name: process_open_fds
+    type: GAUGE
+  - name: process_resident_memory_bytes
+    type: GAUGE
+  - name: process_start_time_seconds
+    type: GAUGE
+  - name: process_virtual_memory_bytes
+    type: GAUGE
+  - name: process_virtual_memory_max_bytes
+    type: GAUGE
+  - name: promhttp_metric_handler_requests_in_flight
+    type: GAUGE
+  - name: promhttp_metric_handler_requests_total
+    type: COUNTER
