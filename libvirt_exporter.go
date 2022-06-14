@@ -102,6 +102,12 @@ var (
 			"6: the domain is crashed, 7: the domain is suspended by guest power management",
 		[]string{"host", "domain"},
 		nil)
+	libvirtDomainInfoAutoStart = prometheus.NewDesc(
+		prometheus.BuildFQName("libvirt", "domain_info", "autostart_enabled"),
+		"Is autostart enabled for domain.",
+		[]string{"host", "domain"},
+		nil)
+	
 
 	libvirtDomainVcpuTimeDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_vcpu", "time_seconds_total"),
@@ -434,6 +440,16 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats, hostNa
 		return err
 	}
 
+	// Report domain autostart.
+	autostart, err := stat.Domain.GetAutostart()
+	if err != nil {
+		return err
+	}
+	autostart_int := 0
+	if autostart {
+		autostart_int = 1
+	}
+
 	ch <- prometheus.MustNewConstMetric(
 		libvirtDomainInfoMetaDesc,
 		prometheus.GaugeValue,
@@ -477,6 +493,12 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats, hostNa
 		libvirtDomainInfoVirDomainState,
 		prometheus.GaugeValue,
 		float64(info.State),
+		hostName,
+		domainName)
+	ch <- prometheus.MustNewConstMetric(
+		libvirtDomainInfoAutoStart,
+		prometheus.GaugeValue,
+		float64(autostart_int),
 		hostName,
 		domainName)
 
@@ -1223,6 +1245,7 @@ func (e *LibvirtExporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- libvirtDomainInfoNrVirtCPUDesc
 	ch <- libvirtDomainInfoCPUTimeDesc
 	ch <- libvirtDomainInfoVirDomainState
+	ch <- libvirtDomainInfoAutoStart
 
 	// VCPU info
 	ch <- libvirtDomainVcpuStateDesc
