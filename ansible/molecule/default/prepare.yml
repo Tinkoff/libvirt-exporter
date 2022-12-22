@@ -1,0 +1,91 @@
+---
+
+- name: Configure test vm
+  hosts: all
+  become: True
+  gather_facts: True
+  tasks:
+    - name: Install libvirtd
+      apt:
+        name: "{{ item.name }}={{ item.version }}"
+        update_cache: True
+      loop:
+        - name: libvirt-daemon
+          version: "6.6.0-1ubuntu3.5"
+        - name: libvirt-daemon-system
+          version: "6.6.0-1ubuntu3.5"
+        - name: libguestfs-tools
+          version: "1:1.42.0-9ubuntu1"
+        - name: virtinst
+          version: "1:2.2.1-4ubuntu2"
+        - name: python3-libvirt
+          version: "6.1.0-1"
+        - name: python3-lxml
+          version: "4.5.2-1ubuntu0.4"
+        - name: podman
+          version: "2.0.6+dfsg1-1ubuntu1.2"
+        - name: runc
+          version: "1.0.0~rc95-0ubuntu1~20.10.1"
+
+    - name: Download prom2json
+      get_url:
+        url: 'https://github.com/prometheus/prom2json/releases/download/v1.3.0/prom2json-1.3.0.linux-amd64.tar.gz'
+        dest: /home/vagrant/prom2json-1.3.0.linux-amd64.tar.gz
+
+    - name: Unpack prom2json
+      ansible.builtin.unarchive:
+        remote_src: True
+        src: /home/vagrant/prom2json-1.3.0.linux-amd64.tar.gz
+        dest: /home/vagrant
+
+    - name: Install prom2json
+      copy: 
+        remote_src: True
+        mode: '777'
+        src: /home/vagrant/prom2json-1.3.0.linux-amd64/prom2json
+        dest: /usr/local/bin/prom2json
+
+    - name: List libvirt volume pools
+      community.libvirt.virt_pool:
+        command: list_pools
+      register: libvirt_pools
+
+    - name: Create default libvirtd volume pool
+      community.libvirt.virt_pool:
+        command: define
+        name: vms
+        xml: '{{ lookup("template", "pool.xml.j2") }}'
+      when: "'default' not in libvirt_pools.list_pools"
+
+    - name: Build vms pool
+      community.libvirt.virt_pool:
+        command: build
+        name: vms
+      when: "'vms' not in libvirt_pools.list_pools"
+
+    - name: Create vms pool
+      community.libvirt.virt_pool:
+        state: active
+        name: vms
+      when: "'vms' not in libvirt_pools.list_pools"
+
+    - name: Download qcow2 vm
+      get_url:
+        url: http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+        dest: /home/vagrant/cirros-0.4.0-x86_64-disk.qcow2
+
+    - name: Create volume
+      command: virsh vol-create-as vms cirros-image.qcow2 128M --format qcow2
+
+    - name: Upload image contents to volume    
+      command: virsh vol-upload cirros-image.qcow2 /home/vagrant/cirros-0.4.0-x86_64-disk.qcow2 --pool vms
+
+    - name: Define vm
+      community.libvirt.virt:
+        command: define
+        xml: "{{ lookup('template', 'vm.xml.j2') }}"
+
+    - name: Create vm
+      community.libvirt.virt:
+        name: test-instance
+        state: running

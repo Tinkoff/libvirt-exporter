@@ -1,0 +1,36 @@
+---
+
+- name: Converge
+  hosts: all
+  become: True
+  vars:
+    image_name: "localhost/alekseizakharov/libvirt-exporter:latest"
+    sources_remote_path: "/srv/sources"
+    sources_local_path: "{{ playbook_dir }}/../../../"
+  tasks:
+    - name: Copy local sources to remote dir
+      ansible.posix.synchronize:
+        src: "{{ sources_local_path }}"
+        dest: "{{ sources_remote_path }}"
+        rsync_opts:
+          - "--no-motd"
+          - "--exclude=.venv"
+
+    - name: Build libvirt-exporter image
+      containers.podman.podman_image:
+        name: "{{ image_name }}"
+        path: "{{ sources_remote_path }}"
+        build:
+          format: docker
+          annotation:
+            app: libvirt-exporter
+            info: metrics exporter for libvirt
+
+    - name: Run libvirt-exporter container
+      containers.podman.podman_container:
+        name: libvirt_exporter
+        image: "{{ image_name }}"
+        state: started
+        recreate: true
+        publish: "9177:9177"
+        volume: "/var/run/libvirt:/var/run/libvirt"

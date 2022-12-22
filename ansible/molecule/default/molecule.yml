@@ -1,0 +1,15 @@
+---
+
+prerun: False
+driver:
+  name: vagrant
+platforms:
+  - name: ubuntu
+    box: generic/ubuntu2010
+    config_options:
+      ssh.keep_alive: True
+      ssh.remote_user: 'vagrant'
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
