@@ -1929,6 +1929,9 @@ func (d *Domain) GetVcpus() ([]DomainVcpuInfo, error) {
 	}
 
 	nvcpus := int(cdominfo.nrVirtCpu)
+	if nvcpus == 0 {
+		return []DomainVcpuInfo{}, nil
+	}
 	npcpus := int(cnodeinfo.nodes * cnodeinfo.sockets * cnodeinfo.cores * cnodeinfo.threads)
 	maplen := ((npcpus + 7) / 8)
 	ccpumaps := make([]C.uchar, maplen*nvcpus)
