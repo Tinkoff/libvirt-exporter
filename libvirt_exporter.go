@@ -63,7 +63,7 @@ var (
 	libvirtDomainInfoMetaDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "meta"),
 		"Domain metadata",
-		[]string{"domain", "uuid", "instance_name", "flavor", "user_name", "user_uuid", "project_name", "project_uuid", "root_type", "root_uuid"},
+		[]string{"domain", "uuid", "instance_name", "flavor", "user_name", "user_uuid", "project_name", "project_uuid", "project_id", "root_type", "root_uuid"},
 		nil)
 	libvirtDomainInfoMaxMemBytesDesc = prometheus.NewDesc(
 		prometheus.BuildFQName("libvirt", "domain_info", "maximum_memory_bytes"),
@@ -434,6 +434,7 @@ func CollectDomain(ch chan<- prometheus.Metric, stat libvirt.DomainStats) error 
 		desc.Metadata.NovaInstance.NovaOwner.NovaUser.UserName,
 		desc.Metadata.NovaInstance.NovaOwner.NovaUser.UserUUID,
 		desc.Metadata.NovaInstance.NovaOwner.NovaProject.ProjectName,
+		desc.Metadata.NovaInstance.NovaOwner.NovaProject.ProjectUUID,
 		desc.Metadata.NovaInstance.NovaOwner.NovaProject.ProjectUUID,
 		desc.Metadata.NovaInstance.NovaRoot.RootType,
 		desc.Metadata.NovaInstance.NovaRoot.RootUUID)
